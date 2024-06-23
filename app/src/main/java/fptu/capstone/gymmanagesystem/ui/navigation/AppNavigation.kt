@@ -7,7 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import fptu.capstone.gymmanagesystem.ui.dashboard.DashboardScreen
-import fptu.capstone.gymmanagesystem.ui.login.LoginViewModel
+import fptu.capstone.gymmanagesystem.viewmodel.LoginViewModel
 
 const val ROOT_ROUTE = "root"
 @Composable

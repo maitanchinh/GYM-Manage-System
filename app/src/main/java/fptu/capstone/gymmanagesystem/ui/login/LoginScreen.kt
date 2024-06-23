@@ -16,6 +16,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import fptu.capstone.gymmanagesystem.ui.component.LargeButton
 import fptu.capstone.gymmanagesystem.ui.component.TextField
+import fptu.capstone.gymmanagesystem.viewmodel.LoginViewModel
 
 @Composable
 fun LoginScreen(

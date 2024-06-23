@@ -1,10 +1,10 @@
-package fptu.capstone.gymmanagesystem.ui.login
+package fptu.capstone.gymmanagesystem.viewmodel
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import fptu.capstone.gymmanagesystem.data.repository.UserRepository
+import fptu.capstone.gymmanagesystem.repositories.UserRepository
 import kotlinx.coroutines.launch
 
 class LoginViewModel(private val userRepository: UserRepository) : ViewModel() {

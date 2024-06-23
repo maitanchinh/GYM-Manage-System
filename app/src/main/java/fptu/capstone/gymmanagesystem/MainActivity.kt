@@ -12,13 +12,15 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
-import fptu.capstone.gymmanagesystem.data.repository.UserRepository
-import fptu.capstone.gymmanagesystem.ui.login.LoginViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import fptu.capstone.gymmanagesystem.repositories.UserRepository
+import fptu.capstone.gymmanagesystem.viewmodel.LoginViewModel
 import fptu.capstone.gymmanagesystem.ui.login.LoginViewModelFactory
 import fptu.capstone.gymmanagesystem.ui.navigation.AppNavigation
 import fptu.capstone.gymmanagesystem.ui.profile.ProfileViewModel
 import fptu.capstone.gymmanagesystem.ui.theme.GYMManageSystemTheme
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val viewModel: LoginViewModel by viewModels {
         LoginViewModelFactory(UserRepository())

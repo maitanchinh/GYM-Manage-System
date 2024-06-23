@@ -23,14 +23,13 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import fptu.capstone.gymmanagesystem.R
+import fptu.capstone.gymmanagesystem.model.GClass
 import fptu.capstone.gymmanagesystem.ui.component.Gap
 
 @Composable
-fun OverviewContent() {
+fun OverviewContent(gClass: GClass) {
     var isExpanded by remember { mutableStateOf(false) }
-    val fullText = "Cardio, short for cardiovascular exercise, refers to intentional physical activity aimed at improving either health or performance. Unlike weight lifting or yoga, which primarily target skeletal muscles, cardio focuses on taxing the heart and lungs. It involves exercising at a constant level of easy intensity for a specified duration (usually a minimum of 30 minutes). Easy intensity allows the cardiovascular system to replenish oxygen to working muscles efficiently.\n" +
-            "\n" +
-            "Cardiovascular training enhances the heart’s ability to pump blood, improves lung function, and burns calories. Whether it’s running, swimming, or dancing, cardio keeps your heart healthy and contributes to overall well-being. Remember, a healthy heart is essential for optimal bodily function, as it ensures oxygen and nutrients reach all cells and tissues. Let’s prioritize cardio and keep our hearts strong!"
+    val fullText = gClass.description ?: ""
     val previewText = if (fullText.length > 200) fullText.substring(0, 200) + "..." else fullText
 
     Column {
@@ -42,7 +41,7 @@ fun OverviewContent() {
             append(" ")
             pushStringAnnotation(tag = "showMoreOrLess", annotation = "")
             withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary, textDecoration = TextDecoration.Underline)) {
-                append(if (isExpanded) "Show Less" else "Show More")
+                append(if (fullText.length > 200){if (isExpanded) "Show Less" else "Show More"} else "")
             }
             pop()
         }

@@ -1,4 +1,4 @@
-package fptu.capstone.gymmanagesystem.data.model
+package fptu.capstone.gymmanagesystem.model
 
 data class User (
     val username: String,

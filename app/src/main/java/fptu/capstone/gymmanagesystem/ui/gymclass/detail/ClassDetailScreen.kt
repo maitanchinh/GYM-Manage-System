@@ -1,6 +1,5 @@
 package fptu.capstone.gymmanagesystem.ui.gymclass.detail
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +17,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,16 +28,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberAsyncImagePainter
+import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import fptu.capstone.gymmanagesystem.R
 import fptu.capstone.gymmanagesystem.ui.component.Gap
+import fptu.capstone.gymmanagesystem.viewmodel.ClassViewModel
 
 @Composable
-fun ClassDetailScreen() {
+fun ClassDetailScreen(classId: String, viewModel: ClassViewModel = hiltViewModel()) {
     var selectedTab by remember { mutableStateOf("Overview") }
+    val gClass = viewModel.gClass.collectAsState()
+    LaunchedEffect(Unit) {
+        viewModel.getClassById(classId)
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -58,14 +67,17 @@ fun ClassDetailScreen() {
                     .fillMaxWidth()
                     .padding(8.dp),
             ) {
-                Image(
-                    painter = rememberAsyncImagePainter(model = "https://olimpsport.com/media/mageplaza/blog/post/image//w/y/wyprobuj-5-najlepszych-cwiczen-cardio-na-silowni_1.jpg"),
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current).data(gClass.value.thumbnailUrl)
+                        .placeholder(
+                            R.drawable.placeholder
+                        ).error(R.drawable.placeholder).build(),
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(shape = RoundedCornerShape(5))
                         .aspectRatio(16f / 9f),
-                    contentScale = ContentScale.FillBounds
+                    contentScale = ContentScale.Crop
                 )
                 Gap.k16.Height()
                 Row(
@@ -87,7 +99,7 @@ fun ClassDetailScreen() {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "Cardio And Strength",
+                        text = gClass.value.name ?: "No name",
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold
                     )
@@ -114,7 +126,7 @@ fun ClassDetailScreen() {
                     )
                     Gap.k8.Width()
                     Text(
-                        text = "members",
+                        text = "${gClass.value.participant}/${gClass.value.totalMember} members",
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.Gray,
                     )
@@ -126,7 +138,7 @@ fun ClassDetailScreen() {
                     )
                     Gap.k8.Width()
                     Text(
-                        text = "36 lessons",
+                        text = "${gClass.value.totalLesson} lessons",
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.Gray,
                     )
@@ -170,7 +182,7 @@ fun ClassDetailScreen() {
         Gap.k16.Height()
         when (selectedTab) {
             "Overview" -> {
-                OverviewContent()
+                OverviewContent(gClass.value)
             }
             "Instructor" -> {
                 Text(text = "Instructor")

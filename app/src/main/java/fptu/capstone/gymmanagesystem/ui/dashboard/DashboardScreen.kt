@@ -7,9 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import fptu.capstone.gymmanagesystem.ui.login.LoginViewModel
+import fptu.capstone.gymmanagesystem.viewmodel.LoginViewModel
 import fptu.capstone.gymmanagesystem.ui.navigation.BottomBarNavigation
-import fptu.capstone.gymmanagesystem.ui.profile.ProfileViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

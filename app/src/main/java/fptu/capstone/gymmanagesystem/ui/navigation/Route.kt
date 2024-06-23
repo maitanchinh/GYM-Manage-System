@@ -9,5 +9,9 @@ sealed class Route(val route: String) {
     object ProfileDetail : Route("profileDetail")
     object Class : Route("class")
     object AllClass : Route("allClass")
-    object ClassDetail : Route("classDetail")
+    object ClassDetail : Route("classDetail/{id}"){
+        fun createRouteWithId(id: String): String {
+            return "classDetail/$id"
+        }
+    }
 }

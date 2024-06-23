@@ -1,4 +1,4 @@
-package fptu.capstone.gymmanagesystem.data.repository
+package fptu.capstone.gymmanagesystem.repositories
 
 
 class UserRepository() {

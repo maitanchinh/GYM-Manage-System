@@ -16,10 +16,10 @@ import fptu.capstone.gymmanagesystem.ui.gymclass.ClassScreen
 import fptu.capstone.gymmanagesystem.ui.gymclass.detail.ClassDetailScreen
 import fptu.capstone.gymmanagesystem.ui.home.HomeScreen
 import fptu.capstone.gymmanagesystem.ui.login.LoginScreen
-import fptu.capstone.gymmanagesystem.ui.login.LoginViewModel
 import fptu.capstone.gymmanagesystem.ui.profile.ProfileDetailScreen
 import fptu.capstone.gymmanagesystem.ui.profile.ProfileScreen
 import fptu.capstone.gymmanagesystem.ui.signup.SignupScreen
+import fptu.capstone.gymmanagesystem.viewmodel.LoginViewModel
 
 const val BOTTOM_BAR_ROUTE = "bottomBar"
 
@@ -58,7 +58,7 @@ fun BottomBarNavigation(
         composable(BottomNavItem.Class.route) {
             ClassScreen(
                 onViewAllMyClassClick = { navController.navigate(Route.AllClass.route) },
-                onClassClick = { navController.navigate(Route.ClassDetail.route) })
+                onClassClick = { id -> navController.navigate(Route.ClassDetail.createRouteWithId(id)) })
         }
         composable(Route.Signup.route) {
             SignupScreen()
@@ -67,10 +67,11 @@ fun BottomBarNavigation(
             ProfileDetailScreen()
         }
         composable(Route.AllClass.route) {
-            AllClassScreen()
+            AllClassScreen(onClassClick = { id -> navController.navigate(Route.ClassDetail.createRouteWithId(id)) })
         }
-        composable(Route.ClassDetail.route) {
-            ClassDetailScreen()
+        composable(Route.ClassDetail.route) { backStackEntry ->
+            val classId = backStackEntry.arguments?.getString("id")
+            ClassDetailScreen(classId = classId!!)
         }
     }
 }

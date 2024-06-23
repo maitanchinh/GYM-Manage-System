@@ -2,7 +2,8 @@ package fptu.capstone.gymmanagesystem.ui.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import fptu.capstone.gymmanagesystem.data.repository.UserRepository
+import fptu.capstone.gymmanagesystem.repositories.UserRepository
+import fptu.capstone.gymmanagesystem.viewmodel.LoginViewModel
 
 class LoginViewModelFactory(private val userRepository: UserRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import fptu.capstone.gymmanagesystem.R
-import fptu.capstone.gymmanagesystem.ui.login.LoginViewModel
+import fptu.capstone.gymmanagesystem.viewmodel.LoginViewModel
 
 @Composable
 fun ProfileScreen(
