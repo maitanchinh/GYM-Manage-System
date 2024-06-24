@@ -71,21 +71,21 @@ fun ClassScreen(
     val notificationCount by remember { mutableStateOf(2) }
     val category = listOf("All", "Cardio", "Strength", "Yoga", "Dance", "Boxing", "Pilates")
     val selectedCategory = remember { mutableStateOf("All") }
-//    var isClassesRefreshing by remember { mutableStateOf(false) }
-    val swipeRefreshState by remember { mutableStateOf(SwipeRefreshState(isRefreshing = classes is DataState.Loading)) }
+    var isClassesRefreshing by remember { mutableStateOf(false) }
+//    val swipeRefreshState by remember { mutableStateOf(SwipeRefreshState(isRefreshing = classes is DataState.Loading)) }
     SwipeRefresh(
-//        state = SwipeRefreshState(isRefreshing = isClassesRefreshing),
-        state = swipeRefreshState,
+        state = SwipeRefreshState(isRefreshing = isClassesRefreshing),
+//        state = swipeRefreshState,
         onRefresh = {
-//            isClassesRefreshing = true
+            isClassesRefreshing = true
             viewModel.refreshClasses()
-//            isClassesRefreshing = false
+            isClassesRefreshing = false
         }
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
         ) {
             Row {
                 Image(
@@ -288,6 +288,7 @@ fun ClassScreen(
                             ClassCard(gymClass = items[index], onClassClick = onClassClick)
                         }
                     }
+
                     is DataState.Empty -> {
                         item {
                             Text(
@@ -296,6 +297,9 @@ fun ClassScreen(
                                 modifier = Modifier.fillMaxSize()
                             )
                         }
+                    }
+
+                    else -> {
                     }
                 }
 //                val items = classes.classes

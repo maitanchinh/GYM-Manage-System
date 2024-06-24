@@ -1,13 +1,10 @@
 package fptu.capstone.gymmanagesystem.ui.navigation
 
-import SessionManager
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -19,7 +16,8 @@ import fptu.capstone.gymmanagesystem.ui.login.LoginScreen
 import fptu.capstone.gymmanagesystem.ui.profile.ProfileDetailScreen
 import fptu.capstone.gymmanagesystem.ui.profile.ProfileScreen
 import fptu.capstone.gymmanagesystem.ui.signup.SignupScreen
-import fptu.capstone.gymmanagesystem.viewmodel.LoginViewModel
+import fptu.capstone.gymmanagesystem.utils.DataState
+import fptu.capstone.gymmanagesystem.viewmodel.AuthViewModel
 
 const val BOTTOM_BAR_ROUTE = "bottomBar"
 
@@ -27,14 +25,10 @@ const val BOTTOM_BAR_ROUTE = "bottomBar"
 fun BottomBarNavigation(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    loginViewModel: LoginViewModel
+    authViewModel: AuthViewModel = hiltViewModel()
 ) {
-    val sessionManager = SessionManager.getInstance()
-    var isLoggedIn by remember { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        sessionManager.isLoggedIn().collect { value -> isLoggedIn = value }
-    }
+    val isLoggedIn by authViewModel.isLoggedIn.collectAsState()
+    val authState by authViewModel.authState.collectAsState()
     NavHost(
         navController = navController,
         startDestination = BottomNavItem.Home.route,
@@ -44,15 +38,15 @@ fun BottomBarNavigation(
         composable(BottomNavItem.Home.route) { HomeScreen() }
         composable(BottomNavItem.Profile.route) {
             if (isLoggedIn) {
-
-                ProfileScreen(loginViewModel = loginViewModel, onProfileDetailClick = {
-                    navController.navigate(Route.ProfileDetail.route)
-                })
+                ProfileScreen(onProfileDetailClick = { id ->
+                    navController.navigate(Route.ProfileDetail.createRouteWithId(id))
+                },
+                    isLoading = authState is DataState.Loading,
+                    onLogoutClick = {
+                        authViewModel.logout()
+                    })
             } else {
-                LoginScreen(
-                    loginViewModel = loginViewModel,
-                    onLoginSuccess = { navController.navigate(BottomNavItem.Profile.route) },
-                    onSignUpClick = { navController.navigate(Route.Signup.route) })
+                LoginScreen(authViewModel, navController = navController)
             }
         }
         composable(BottomNavItem.Class.route) {
@@ -63,11 +57,18 @@ fun BottomBarNavigation(
         composable(Route.Signup.route) {
             SignupScreen()
         }
-        composable(Route.ProfileDetail.route) {
-            ProfileDetailScreen()
+        composable(Route.ProfileDetail.route) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("id")
+            ProfileDetailScreen(userId = userId!!)
         }
         composable(Route.AllClass.route) {
-            AllClassScreen(onClassClick = { id -> navController.navigate(Route.ClassDetail.createRouteWithId(id)) })
+            AllClassScreen(onClassClick = { id ->
+                navController.navigate(
+                    Route.ClassDetail.createRouteWithId(
+                        id
+                    )
+                )
+            })
         }
         composable(Route.ClassDetail.route) { backStackEntry ->
             val classId = backStackEntry.arguments?.getString("id")

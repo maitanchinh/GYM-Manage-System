@@ -11,14 +11,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun LargeButton(text: String, isLoading: Boolean, onClick: () -> Unit) {
+fun LargeButton(text: String, isLoading: Boolean, enabled: Boolean = true, onClick: () -> Unit) {
     Button(
+        enabled = enabled,
         onClick = onClick,
-        enabled = !isLoading,
         modifier = Modifier.fillMaxWidth()
     ) {
         if (isLoading) {
-            CircularProgressIndicator(modifier = Modifier.size(24.dp))
+            CircularProgressIndicator(modifier = Modifier.size(24.dp).padding(8.dp))
         } else {
             Text(text, modifier = Modifier.padding(8.dp))
         }

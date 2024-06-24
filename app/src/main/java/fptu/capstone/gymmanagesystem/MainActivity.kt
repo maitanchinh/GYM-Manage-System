@@ -13,18 +13,12 @@ import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
-import fptu.capstone.gymmanagesystem.repositories.UserRepository
-import fptu.capstone.gymmanagesystem.viewmodel.LoginViewModel
-import fptu.capstone.gymmanagesystem.ui.login.LoginViewModelFactory
 import fptu.capstone.gymmanagesystem.ui.navigation.AppNavigation
-import fptu.capstone.gymmanagesystem.ui.profile.ProfileViewModel
 import fptu.capstone.gymmanagesystem.ui.theme.GYMManageSystemTheme
+import fptu.capstone.gymmanagesystem.viewmodel.ProfileViewModel
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val viewModel: LoginViewModel by viewModels {
-        LoginViewModelFactory(UserRepository())
-    }
     private val profileViewModel: ProfileViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,14 +26,13 @@ class MainActivity : ComponentActivity() {
         setContent {
             val isDarkMode by profileViewModel.darkMode.observeAsState(false)
             GYMManageSystemTheme(darkTheme = isDarkMode) {
-                var navHostController = rememberNavController()
+                val navHostController = rememberNavController()
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
                     AppNavigation(
                         modifier = Modifier.fillMaxSize(),
-                        loginViewModel = viewModel,
                         navHostController = navHostController,
                     )
                 }

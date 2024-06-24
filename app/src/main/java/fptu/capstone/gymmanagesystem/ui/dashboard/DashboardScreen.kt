@@ -7,14 +7,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import fptu.capstone.gymmanagesystem.viewmodel.LoginViewModel
 import fptu.capstone.gymmanagesystem.ui.navigation.BottomBarNavigation
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DashboardScreen(navController: NavHostController, loginViewModel: LoginViewModel) {
+fun DashboardScreen(navController: NavHostController) {
     val navControllerBottomBar = rememberNavController()
     Scaffold(bottomBar = { BottomNavigationBar(navController = navControllerBottomBar) }) {
-        BottomBarNavigation(navController = navControllerBottomBar, modifier = Modifier.padding(it), loginViewModel = loginViewModel)
+        BottomBarNavigation(navController = navControllerBottomBar, modifier = Modifier.padding(it))
     }
 }

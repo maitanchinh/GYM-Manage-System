@@ -6,7 +6,11 @@ sealed class Route(val route: String) {
     object Profile : Route("profile")
     object Home : Route("home")
     object Signup : Route("signup")
-    object ProfileDetail : Route("profileDetail")
+    object ProfileDetail : Route("profileDetail/{id}"){
+        fun createRouteWithId(id: String): String {
+            return "profileDetail/$id"
+        }
+    }
     object Class : Route("class")
     object AllClass : Route("allClass")
     object ClassDetail : Route("classDetail/{id}"){

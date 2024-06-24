@@ -1,11 +1,16 @@
 package fptu.capstone.gymmanagesystem.di
 
 import android.annotation.SuppressLint
+import android.content.Context
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import fptu.capstone.gymmanagesystem.network.AuthApiService
 import fptu.capstone.gymmanagesystem.network.ClassApiService
+import fptu.capstone.gymmanagesystem.network.UserApiService
+import fptu.capstone.gymmanagesystem.utils.SessionManager
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -48,7 +53,25 @@ object NetworkModule {
 
     @Singleton
     @Provides
+    fun provideSessionManager(@ApplicationContext context: Context): SessionManager {
+        return SessionManager(context)
+    }
+
+    @Singleton
+    @Provides
     fun provideClassApiService(retrofit: Retrofit): ClassApiService {
         return retrofit.create(ClassApiService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideAuthApiService(retrofit: Retrofit): AuthApiService {
+        return retrofit.create(AuthApiService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideUserApiService(retrofit: Retrofit): UserApiService {
+        return retrofit.create(UserApiService::class.java)
     }
 }

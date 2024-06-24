@@ -1,71 +1,49 @@
+package fptu.capstone.gymmanagesystem.utils
+
 import android.content.Context
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.emptyPreferences
-import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.map
+import androidx.core.content.edit
+import com.google.gson.Gson
+import dagger.hilt.android.qualifiers.ApplicationContext
+import fptu.capstone.gymmanagesystem.model.AuthResponse
+import fptu.capstone.gymmanagesystem.model.User
 import java.io.IOException
+import javax.inject.Inject
 
-
-class SessionManager(private val context: Context) {
-    private val Context.dataStore by preferencesDataStore(name = "user_prefs")
-    private val ACCESS_TOKEN_KEY = stringPreferencesKey("access_token")
-
-    companion object {
-        @Volatile
-        private var instance: SessionManager? = null
-
-        fun initialize(context: Context) {
-            if (instance == null) {
-                synchronized(this) {
-                    if (instance == null) {
-                        instance = SessionManager(context.applicationContext)
-                    }
-                }
-            }
-        }
-
-        fun getInstance(): SessionManager {
-            return instance ?: throw IllegalStateException("SessionManager must be initialized")
+class SessionManager @Inject constructor(@ApplicationContext context: Context) {
+    private val sharedPreferences = context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
+    private val gson = Gson()
+    fun saveAuthResponse(authResponse: AuthResponse) {
+        sharedPreferences.edit() {
+            putString("TOKEN_KEY", authResponse.accessToken).apply()
+            putString("USER_KEY", gson.toJson(authResponse.user)).apply()
         }
     }
 
-    suspend fun saveAccessToken(accessToken: String) {
+    fun getToken(): String? {
+        return sharedPreferences.getString("TOKEN_KEY", null)
+    }
+
+    fun getUser(): User? {
+        val userJson = sharedPreferences.getString("USER_KEY", null)
+        return if (userJson != null) {
+            gson.fromJson(userJson, User::class.java)
+        } else {
+            null
+        }
+    }
+
+    fun isLoggedIn(): Boolean {
+        return sharedPreferences.contains("TOKEN_KEY") && sharedPreferences.contains("USER_KEY")
+    }
+
+//    fun isLoggedIn(): Boolean {
+//        return getToken() != null
+//    }
+
+    fun clearAccessToken() {
         try {
-            context.dataStore.edit { preferences ->
-                preferences[ACCESS_TOKEN_KEY] = accessToken
-            }
-        } catch (e: IOException) {
-            // Handle IOException appropriately
-            e.printStackTrace()
-        }
-    }
-
-    private fun getAccessToken(): Flow<String> {
-        return context.dataStore.data
-            .catch { exception ->
-                if (exception is IOException) {
-                    emit(emptyPreferences())
-                } else {
-                    throw exception
-                }
-            }.map { preferences ->
-                preferences[ACCESS_TOKEN_KEY] ?: ""
-            }
-    }
-
-    fun isLoggedIn(): Flow<Boolean> {
-        return getAccessToken().map { it.isNotEmpty() }
-    }
-
-    suspend fun clearAccessToken() {
-        try {
-            kotlinx.coroutines.delay(2000)
-            context.dataStore.edit { preferences ->
-                preferences[ACCESS_TOKEN_KEY] = ""
-            }
+            sharedPreferences.edit().remove("TOKEN_KEY").apply()
+            sharedPreferences.edit().remove("USER_KEY").apply()
         } catch (e: IOException) {
             // Handle IOException appropriately
             e.printStackTrace()

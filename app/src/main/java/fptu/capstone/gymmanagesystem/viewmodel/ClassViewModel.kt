@@ -41,7 +41,7 @@ class ClassViewModel @Inject constructor(private val classRepository: ClassRepos
             } catch (e: Exception) {
                 e.printStackTrace()
                 println("Error: ${e.message}")
-                _classes.value = DataState.Error(e)
+                _classes.value = DataState.Error(e.message ?: "Unknown error")
             }
         }
     }

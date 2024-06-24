@@ -1,7 +1,8 @@
 package fptu.capstone.gymmanagesystem.model
 
 data class AuthResponse(
-    val token: String
+    val accessToken: String,
+    val user: User
 )
 
 data class LoginRequest(

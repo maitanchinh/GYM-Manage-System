@@ -1,6 +1,5 @@
 package fptu.capstone.gymmanagesystem.ui.profile
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,45 +27,52 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.rememberAsyncImagePainter
+import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import fptu.capstone.gymmanagesystem.R
-import fptu.capstone.gymmanagesystem.viewmodel.LoginViewModel
+import fptu.capstone.gymmanagesystem.viewmodel.ProfileViewModel
 
 @Composable
 fun ProfileScreen(
     modifier: Modifier = Modifier,
-    loginViewModel: LoginViewModel,
-    profileViewModel: ProfileViewModel = viewModel(),
-    onProfileDetailClick: () -> Unit
+    profileViewModel: ProfileViewModel = hiltViewModel(),
+    onProfileDetailClick: (id: String) -> Unit,
+    isLoading: Boolean,
+    onLogoutClick: () -> Unit
 ) {
-    val isLoading by loginViewModel.isLoading
     val isDarkMode by profileViewModel.darkMode.observeAsState(initial = false)
+    val user = profileViewModel.getUser()
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(
-            painter = rememberAsyncImagePainter("https://avatar.iran.liara.run/public/48"),
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current).data(user?.avatarUrl).placeholder( R.drawable.avatar_placeholder).error(R.drawable.avatar_placeholder).build(),
             contentDescription = null,
             modifier = Modifier
                 .size(150.dp)
-                .clipToBounds()
+                .clip(shape = RoundedCornerShape(75.dp)),
+            contentScale = ContentScale.Crop
         )
         Spacer(modifier = Modifier.padding(8.dp))
-        Text(
-            text = "Nguyễn Văn An",
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Bold,
-        )
+        user?.name?.let {
+            Text(
+                text = it,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold,
+            )
+        }
         Spacer(modifier = Modifier.padding(4.dp))
         Text(
-            text = "nguyenvanan@gmail.com",
+            text = user?.email!!,
             style = MaterialTheme.typography.bodyMedium,
         )
         Spacer(modifier = Modifier.padding(8.dp))
@@ -79,7 +85,9 @@ fun ProfileScreen(
         ) {
             Column {
                 Row(
-                    modifier = Modifier.fillMaxWidth().clickable { onProfileDetailClick() },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onProfileDetailClick(user.id!!) },
                     horizontalArrangement = Arrangement.Start,
                     verticalAlignment = Alignment.CenterVertically,
 
@@ -128,7 +136,7 @@ fun ProfileScreen(
             }
         }
         Spacer(modifier = Modifier.padding(8.dp))
-        if (!isLoading) TextButton(onClick = { loginViewModel.logout() }) {
+        if (!isLoading) TextButton(onClick = onLogoutClick) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,

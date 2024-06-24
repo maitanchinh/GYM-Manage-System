@@ -49,7 +49,7 @@ fun ClassDetailScreen(classId: String, viewModel: ClassViewModel = hiltViewModel
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(start = 16.dp, end = 16.dp, bottom = 0.dp)
             .verticalScroll(rememberScrollState())
     ) {
         Box(
