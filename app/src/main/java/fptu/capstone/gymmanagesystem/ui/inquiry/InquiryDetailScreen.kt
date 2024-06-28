@@ -56,22 +56,24 @@ fun InquiryDetailScreen(inquiryViewModel: InquiryViewModel = hiltViewModel(), id
                     ) {
                         Text(text = inquiry.message!!, style = MaterialTheme.typography.bodyLarge)
                     }
-                    Gap.k8.Height()
-                    Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.Center) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.round_import_export_32),
-                            contentDescription = null
-                        )
-                    }
-                    Gap.k8.Height()
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clip(shape = RoundedCornerShape(16.dp))
-                            .background(color = MaterialTheme.colorScheme.secondaryContainer)
-                            .padding(16.dp)
-                    ) {
-                        Text(text = inquiry.inquiryResponse?.message!!, style = MaterialTheme.typography.bodyLarge)
+                    if (inquiry.inquiryResponse != null) {
+                        Gap.k8.Height()
+                        Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.Center) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.round_import_export_32),
+                                contentDescription = null
+                            )
+                        }
+                        Gap.k8.Height()
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(shape = RoundedCornerShape(16.dp))
+                                .background(color = MaterialTheme.colorScheme.secondaryContainer)
+                                .padding(16.dp)
+                        ) {
+                            Text(text = inquiry.inquiryResponse?.message!!, style = MaterialTheme.typography.bodyLarge)
+                        }
                     }
                 }
             }
