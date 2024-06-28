@@ -18,4 +18,10 @@ sealed class Route(val route: String) {
             return "classDetail/$id"
         }
     }
+    object Inquiry : Route("inquiry")
+    object InquiryDetail : Route("inquiryDetail/{id}"){
+        fun createRouteWithId(id: String): String {
+            return "inquiryDetail/$id"
+        }
+    }
 }

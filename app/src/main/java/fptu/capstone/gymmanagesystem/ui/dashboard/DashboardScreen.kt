@@ -9,7 +9,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import fptu.capstone.gymmanagesystem.ui.navigation.BottomBarNavigation
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(navController: NavHostController) {
     val navControllerBottomBar = rememberNavController()

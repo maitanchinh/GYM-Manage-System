@@ -9,6 +9,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import fptu.capstone.gymmanagesystem.network.AuthApiService
 import fptu.capstone.gymmanagesystem.network.ClassApiService
+import fptu.capstone.gymmanagesystem.network.InquiryApiService
 import fptu.capstone.gymmanagesystem.network.UserApiService
 import fptu.capstone.gymmanagesystem.utils.SessionManager
 import okhttp3.OkHttpClient
@@ -73,5 +74,11 @@ object NetworkModule {
     @Provides
     fun provideUserApiService(retrofit: Retrofit): UserApiService {
         return retrofit.create(UserApiService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideInquiryApiService(retrofit: Retrofit): InquiryApiService {
+        return retrofit.create(InquiryApiService::class.java)
     }
 }

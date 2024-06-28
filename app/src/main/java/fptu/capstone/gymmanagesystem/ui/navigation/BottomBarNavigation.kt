@@ -12,6 +12,8 @@ import fptu.capstone.gymmanagesystem.ui.gymclass.AllClassScreen
 import fptu.capstone.gymmanagesystem.ui.gymclass.ClassScreen
 import fptu.capstone.gymmanagesystem.ui.gymclass.detail.ClassDetailScreen
 import fptu.capstone.gymmanagesystem.ui.home.HomeScreen
+import fptu.capstone.gymmanagesystem.ui.inquiry.InquiryDetailScreen
+import fptu.capstone.gymmanagesystem.ui.inquiry.InquiryScreen
 import fptu.capstone.gymmanagesystem.ui.login.LoginScreen
 import fptu.capstone.gymmanagesystem.ui.profile.ProfileDetailScreen
 import fptu.capstone.gymmanagesystem.ui.profile.ProfileScreen
@@ -73,6 +75,13 @@ fun BottomBarNavigation(
         composable(Route.ClassDetail.route) { backStackEntry ->
             val classId = backStackEntry.arguments?.getString("id")
             ClassDetailScreen(classId = classId!!)
+        }
+        composable(Route.Inquiry.route) {
+            InquiryScreen(navController = navController)
+        }
+        composable(Route.InquiryDetail.route) { backStackEntry ->
+            val inquiryId = backStackEntry.arguments?.getString("id")
+            InquiryDetailScreen(id = inquiryId!!)
         }
     }
 }
