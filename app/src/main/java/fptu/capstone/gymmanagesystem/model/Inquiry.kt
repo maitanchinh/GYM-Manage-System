@@ -3,6 +3,7 @@ package fptu.capstone.gymmanagesystem.model
 import com.google.gson.annotations.SerializedName
 
 data class Inquiry(
+    @SerializedName("id") var id: String? = null,
     @SerializedName("title") var title: String? = null,
     @SerializedName("message") var message: String? = null,
     @SerializedName("status") var status: String? = null,

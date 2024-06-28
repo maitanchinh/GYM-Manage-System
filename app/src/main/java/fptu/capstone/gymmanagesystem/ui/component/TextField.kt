@@ -4,7 +4,6 @@ package fptu.capstone.gymmanagesystem.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -18,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TextField(label: String? = null, value: String? = null, visualTransformation: VisualTransformation = VisualTransformation.None, maxLines: Int = 1, onTextChange: (String) -> Unit) {
     OutlinedTextField(
