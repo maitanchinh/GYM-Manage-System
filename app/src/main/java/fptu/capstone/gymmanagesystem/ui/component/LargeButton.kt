@@ -8,6 +8,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -18,7 +19,7 @@ fun LargeButton(text: String, isLoading: Boolean, enabled: Boolean = true, onCli
         modifier = Modifier.fillMaxWidth()
     ) {
         if (isLoading) {
-            CircularProgressIndicator(modifier = Modifier.size(24.dp).padding(8.dp))
+            CircularProgressIndicator(modifier = Modifier.padding(8.dp).size(20.dp), color = Color.White)
         } else {
             Text(text, modifier = Modifier.padding(8.dp))
         }

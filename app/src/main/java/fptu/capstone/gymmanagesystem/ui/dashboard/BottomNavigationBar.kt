@@ -14,7 +14,7 @@ import fptu.capstone.gymmanagesystem.ui.navigation.BottomNavItem
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {
     val items = listOf(
-        BottomNavItem.Home,
+        BottomNavItem.Schedule,
         BottomNavItem.Class,
         BottomNavItem.Inquiry,
         BottomNavItem.Profile,

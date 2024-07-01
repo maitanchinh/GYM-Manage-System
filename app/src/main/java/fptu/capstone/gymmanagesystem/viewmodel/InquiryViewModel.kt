@@ -21,6 +21,8 @@ class InquiryViewModel @Inject constructor(private val inquiryRepository: Inquir
     val inquiries: StateFlow<DataState<Inquiries>> = _inquiries
     private val _inquiry = MutableStateFlow<DataState<Inquiry>>(DataState.Idle)
     val inquiry: StateFlow<DataState<Inquiry>> = _inquiry
+    val _deleteState = MutableStateFlow<DataState<Int>>(DataState.Idle)
+    val deleteState: StateFlow<DataState<Int>> = _deleteState
     private val _showAddInquiryDialog = MutableStateFlow(false)
     val showAddInquiryDialog: StateFlow<Boolean> = _showAddInquiryDialog
     private val _title = MutableStateFlow("")
@@ -74,6 +76,7 @@ class InquiryViewModel @Inject constructor(private val inquiryRepository: Inquir
 
     fun showOrHideAddInquiryDialog() {
         _showAddInquiryDialog.value = !_showAddInquiryDialog.value
+        println("Dialog state changed to: ${_showAddInquiryDialog.value}")
     }
 
     fun setTitle(title: String) {
@@ -93,6 +96,26 @@ class InquiryViewModel @Inject constructor(private val inquiryRepository: Inquir
             } catch (e: Exception) {
                 e.printStackTrace()
                 println("Error at createInquiry: ${e.message}")
+                _inquiry.value = DataState.Error(e.message ?: "Unknown error")
+            }
+        }
+    }
+
+    fun deleteInquiry(id: String) {
+        viewModelScope.launch {
+            try {
+                val currentState = _inquiries.value
+                if (currentState is DataState.Success) {
+                    val currentList = ArrayList(currentState.data.inquiries ?: emptyList())
+                    currentList.remove(currentList.find { it.id == id })
+                    _inquiries.value =
+                        DataState.Success(currentState.data.copy(inquiries = currentList))
+                }
+                val response = inquiryRepository.deleteInquiry(id)
+                _deleteState.value = DataState.Success(response)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                println("Error at deleteInquiry: ${e.message}")
                 _inquiry.value = DataState.Error(e.message ?: "Unknown error")
             }
         }

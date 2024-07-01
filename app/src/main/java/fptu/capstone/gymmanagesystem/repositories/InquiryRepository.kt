@@ -11,4 +11,6 @@ class InquiryRepository @Inject constructor(private val inquiryApiService: Inqui
     suspend fun getInquiryDetail(id: String) = inquiryApiService.getInquiryDetail(id)
 
     suspend fun createInquiry(inquiryRequestBody: InquiryRequestBody) = inquiryApiService.createInquiry(inquiryRequestBody)
+
+    suspend fun deleteInquiry(id: String) = inquiryApiService.deleteInquiry(id)
 }

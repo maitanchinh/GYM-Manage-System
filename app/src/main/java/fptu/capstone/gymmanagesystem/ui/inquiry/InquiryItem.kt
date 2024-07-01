@@ -12,21 +12,25 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import fptu.capstone.gymmanagesystem.R
 import fptu.capstone.gymmanagesystem.model.Inquiry
 import fptu.capstone.gymmanagesystem.ui.component.Gap
 import fptu.capstone.gymmanagesystem.ui.navigation.Route
+import fptu.capstone.gymmanagesystem.ui.theme.ForestGreen
+import fptu.capstone.gymmanagesystem.ui.theme.GoldYellow
 
 @Composable
 fun InquiryItem(
     inquiries: List<Inquiry>,
-    it: Int,
+    index: Int,
     navController: NavHostController
 ) {
     Box(
@@ -37,19 +41,39 @@ fun InquiryItem(
             .background(color = MaterialTheme.colorScheme.secondaryContainer)
             .padding(16.dp)
             .clickable {
-                navController.navigate(Route.InquiryDetail.createRouteWithId(inquiries[it].id!!))
+                navController.navigate(Route.InquiryDetail.createRouteWithId(inquiries[index].id!!))
             }
     ) {
-        Row {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = inquiries[it].title!!,
-                    style = MaterialTheme.typography.titleLarge
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            if (inquiries[index].status.equals("Accepted")) {
+                Icon(
+                    painter = painterResource(id = R.drawable.round_check_circle_outline_32),
+                    tint = ForestGreen,
+                    contentDescription = "Received Reply"
                 )
-                Text(text = inquiries[it].message!!)
+            } else if (inquiries[index].status.equals("Pending")) {
+                Icon(
+                    painter = painterResource(id = R.drawable.round_pending_32),
+                    tint = GoldYellow,
+                    contentDescription = "Received Reply"
+                )
+            } else if (inquiries[index].status.equals("Rejected")) {
+                Icon(
+                    painter = painterResource(id = R.drawable.round_highlight_off_32),
+                    tint = MaterialTheme.colorScheme.error,
+                    contentDescription = "Received Reply"
+                )
             }
             Gap.k16.Width()
-            if (inquiries[it].inquiryResponse != null) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = inquiries[index].title!!,
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Text(text = inquiries[index].message!!, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            }
+            Gap.k16.Width()
+            if (inquiries[index].inquiryResponse != null) {
                 Icon(
                     painter = painterResource(id = R.drawable.round_mark_email_read_24),
                     tint = Color(0xFF228B22),

@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import fptu.capstone.gymmanagesystem.R
 import fptu.capstone.gymmanagesystem.ui.component.Gap
+import fptu.capstone.gymmanagesystem.ui.theme.ForestGreen
 import fptu.capstone.gymmanagesystem.utils.DataState
 import fptu.capstone.gymmanagesystem.viewmodel.InquiryViewModel
 
@@ -58,11 +59,28 @@ fun InquiryDetailScreen(inquiryViewModel: InquiryViewModel = hiltViewModel(), id
                     }
                     if (inquiry.inquiryResponse != null) {
                         Gap.k8.Height()
-                        Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.Center) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.round_import_export_32),
-                                contentDescription = null
-                            )
+                        if (inquiry.status.equals("Accepted")) {
+                            Row(
+                                modifier = Modifier.fillMaxSize(),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.round_check_circle_outline_32),
+                                    contentDescription = null,
+                                    tint = ForestGreen
+                                )
+                            }
+                        } else if (inquiry.status.equals("Rejected")) {
+                            Row(
+                                modifier = Modifier.fillMaxSize(),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.round_highlight_off_32),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.error
+                                )
+                            }
                         }
                         Gap.k8.Height()
                         Box(
@@ -72,12 +90,16 @@ fun InquiryDetailScreen(inquiryViewModel: InquiryViewModel = hiltViewModel(), id
                                 .background(color = MaterialTheme.colorScheme.secondaryContainer)
                                 .padding(16.dp)
                         ) {
-                            Text(text = inquiry.inquiryResponse?.message!!, style = MaterialTheme.typography.bodyLarge)
+                            Text(
+                                text = inquiry.inquiryResponse?.message!!,
+                                style = MaterialTheme.typography.bodyLarge
+                            )
                         }
                     }
                 }
             }
         }
+
         is DataState.Error -> {
             // Error
         }

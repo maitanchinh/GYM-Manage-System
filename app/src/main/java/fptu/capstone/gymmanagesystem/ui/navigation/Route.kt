@@ -24,4 +24,5 @@ sealed class Route(val route: String) {
             return "inquiryDetail/$id"
         }
     }
+    object Schedule : Route("schedule")
 }

@@ -11,12 +11,12 @@ import androidx.navigation.compose.composable
 import fptu.capstone.gymmanagesystem.ui.gymclass.AllClassScreen
 import fptu.capstone.gymmanagesystem.ui.gymclass.ClassScreen
 import fptu.capstone.gymmanagesystem.ui.gymclass.detail.ClassDetailScreen
-import fptu.capstone.gymmanagesystem.ui.home.HomeScreen
 import fptu.capstone.gymmanagesystem.ui.inquiry.InquiryDetailScreen
 import fptu.capstone.gymmanagesystem.ui.inquiry.InquiryScreen
 import fptu.capstone.gymmanagesystem.ui.login.LoginScreen
 import fptu.capstone.gymmanagesystem.ui.profile.ProfileDetailScreen
 import fptu.capstone.gymmanagesystem.ui.profile.ProfileScreen
+import fptu.capstone.gymmanagesystem.ui.schedule.ScheduleScreen
 import fptu.capstone.gymmanagesystem.ui.signup.SignupScreen
 import fptu.capstone.gymmanagesystem.utils.DataState
 import fptu.capstone.gymmanagesystem.viewmodel.AuthViewModel
@@ -33,11 +33,11 @@ fun BottomBarNavigation(
     val authState by authViewModel.authState.collectAsState()
     NavHost(
         navController = navController,
-        startDestination = BottomNavItem.Home.route,
+        startDestination = BottomNavItem.Schedule.route,
         modifier = modifier,
         route = BOTTOM_BAR_ROUTE
     ) {
-        composable(BottomNavItem.Home.route) { HomeScreen() }
+        composable(BottomNavItem.Schedule.route) { ScheduleScreen() }
         composable(BottomNavItem.Profile.route) {
             if (isLoggedIn) {
                 ProfileScreen(onProfileDetailClick = { id ->
@@ -57,7 +57,7 @@ fun BottomBarNavigation(
                 onClassClick = { id -> navController.navigate(Route.ClassDetail.createRouteWithId(id)) })
         }
         composable(Route.Signup.route) {
-            SignupScreen()
+            SignupScreen(navController = navController)
         }
         composable(Route.ProfileDetail.route) { backStackEntry ->
             val userId = backStackEntry.arguments?.getString("id")

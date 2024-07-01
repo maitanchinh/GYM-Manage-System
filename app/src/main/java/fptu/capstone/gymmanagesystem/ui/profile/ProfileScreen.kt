@@ -37,18 +37,18 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import fptu.capstone.gymmanagesystem.R
-import fptu.capstone.gymmanagesystem.viewmodel.ProfileViewModel
+import fptu.capstone.gymmanagesystem.viewmodel.UserViewModel
 
 @Composable
 fun ProfileScreen(
     modifier: Modifier = Modifier,
-    profileViewModel: ProfileViewModel = hiltViewModel(),
+    userViewModel: UserViewModel = hiltViewModel(),
     onProfileDetailClick: (id: String) -> Unit,
     isLoading: Boolean,
     onLogoutClick: () -> Unit
 ) {
-    val isDarkMode by profileViewModel.darkMode.observeAsState(initial = false)
-    val user = profileViewModel.getUser()
+    val isDarkMode by userViewModel.darkMode.observeAsState(initial = false)
+    val user = userViewModel.getUser()
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -131,7 +131,7 @@ fun ProfileScreen(
                     Switch(
                         modifier = Modifier.height(24.dp),
                         checked = isDarkMode,
-                        onCheckedChange = { profileViewModel.onDarkModeSwitchChanged(!isDarkMode) })
+                        onCheckedChange = { userViewModel.onDarkModeSwitchChanged(!isDarkMode) })
                 }
             }
         }

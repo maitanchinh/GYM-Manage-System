@@ -40,16 +40,16 @@ import fptu.capstone.gymmanagesystem.ui.component.Gap
 import fptu.capstone.gymmanagesystem.ui.component.LargeButton
 import fptu.capstone.gymmanagesystem.ui.component.TextField
 import fptu.capstone.gymmanagesystem.utils.DataState
-import fptu.capstone.gymmanagesystem.viewmodel.ProfileViewModel
+import fptu.capstone.gymmanagesystem.viewmodel.UserViewModel
 
 @Composable
 fun ProfileDetailScreen(
-    profileViewModel: ProfileViewModel = hiltViewModel(),
+    userViewModel: UserViewModel = hiltViewModel(),
     userId: String
 ) {
-    val userState = profileViewModel.userState.collectAsState()
+    val userState = userViewModel.userState.collectAsState()
     LaunchedEffect(key1 = userId) {
-        profileViewModel.getUserById(userId)
+        userViewModel.getUserById(userId)
     }
     when (userState.value) {
         is DataState.Loading -> {
