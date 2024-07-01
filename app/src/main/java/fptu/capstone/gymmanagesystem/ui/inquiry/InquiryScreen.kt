@@ -126,7 +126,7 @@ fun InquiryScreen(
                                         }
                                     },
                                     content = {
-                                        InquiryItem(inquiries, index, navController)
+                                        InquiryItem(inquiries, index, navController, deleteState is DataState.Loading)
                                     }
                                 )
                             }
@@ -170,6 +170,10 @@ fun InquiryScreen(
             if (deleteState is DataState.Success) {
                 LaunchedEffect(Unit) {
                     Toast.makeText(context, "Inquiry deleted successfully", Toast.LENGTH_SHORT).show()
+                }
+            } else if (deleteState is DataState.Error) {
+                LaunchedEffect(Unit) {
+                    Toast.makeText(context, (deleteState as DataState.Error).message, Toast.LENGTH_SHORT).show()
                 }
             }
         })

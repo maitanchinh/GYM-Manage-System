@@ -21,5 +21,5 @@ interface InquiryApiService {
     suspend fun createInquiry(@Body inquiryRequestBody: InquiryRequestBody) : Inquiry
 
     @DELETE("inqueries/{id}")
-    suspend fun deleteInquiry(@Path("id") id: String) : Int
+    suspend fun deleteInquiry(@Path("id") id: String) : Inquiry
 }

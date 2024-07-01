@@ -4,28 +4,42 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.painterResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import fptu.capstone.gymmanagesystem.ui.navigation.BottomNavItem
+import fptu.capstone.gymmanagesystem.viewmodel.AuthViewModel
 
 @Composable
-fun BottomNavigationBar(navController: NavHostController) {
-    val items = listOf(
-        BottomNavItem.Schedule,
-        BottomNavItem.Class,
-        BottomNavItem.Inquiry,
-        BottomNavItem.Profile,
-    )
+fun BottomNavigationBar(
+    navController: NavHostController,
+    authViewModel: AuthViewModel = hiltViewModel()
+) {
+    val isLoggedIn by authViewModel.isLoggedIn.collectAsState()
+    val items = if (isLoggedIn) {
+        listOf(
+            BottomNavItem.Schedule,
+            BottomNavItem.Class,
+            BottomNavItem.Inquiry,
+            BottomNavItem.Profile,
+        )
+    } else {
+        listOf(
+            BottomNavItem.Class,
+            BottomNavItem.Profile,
+        )
+    }
     NavigationBar {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
         items.forEach { item ->
             NavigationBarItem(
 //                modifier = Modifier.background(color = MaterialTheme.colorScheme.primary),
-                icon = {Icon(painterResource(id = item.icon), contentDescription = item.title)},
+                icon = { Icon(painterResource(id = item.icon), contentDescription = item.title) },
 //                label = { Text(item.title) },
                 selected = currentRoute?.startsWith(item.route) == true,
                 onClick = {

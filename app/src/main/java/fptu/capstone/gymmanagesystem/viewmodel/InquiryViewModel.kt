@@ -21,8 +21,8 @@ class InquiryViewModel @Inject constructor(private val inquiryRepository: Inquir
     val inquiries: StateFlow<DataState<Inquiries>> = _inquiries
     private val _inquiry = MutableStateFlow<DataState<Inquiry>>(DataState.Idle)
     val inquiry: StateFlow<DataState<Inquiry>> = _inquiry
-    val _deleteState = MutableStateFlow<DataState<Int>>(DataState.Idle)
-    val deleteState: StateFlow<DataState<Int>> = _deleteState
+    private val _deleteState = MutableStateFlow<DataState<Inquiry>>(DataState.Idle)
+    val deleteState: StateFlow<DataState<Inquiry>> = _deleteState
     private val _showAddInquiryDialog = MutableStateFlow(false)
     val showAddInquiryDialog: StateFlow<Boolean> = _showAddInquiryDialog
     private val _title = MutableStateFlow("")
@@ -103,7 +103,10 @@ class InquiryViewModel @Inject constructor(private val inquiryRepository: Inquir
 
     fun deleteInquiry(id: String) {
         viewModelScope.launch {
+            _deleteState.value = DataState.Loading
             try {
+                val response = inquiryRepository.deleteInquiry(id)
+                _deleteState.value = DataState.Success(response)
                 val currentState = _inquiries.value
                 if (currentState is DataState.Success) {
                     val currentList = ArrayList(currentState.data.inquiries ?: emptyList())
@@ -111,8 +114,6 @@ class InquiryViewModel @Inject constructor(private val inquiryRepository: Inquir
                     _inquiries.value =
                         DataState.Success(currentState.data.copy(inquiries = currentList))
                 }
-                val response = inquiryRepository.deleteInquiry(id)
-                _deleteState.value = DataState.Success(response)
             } catch (e: Exception) {
                 e.printStackTrace()
                 println("Error at deleteInquiry: ${e.message}")
