@@ -8,8 +8,12 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import fptu.capstone.gymmanagesystem.network.AuthApiService
+import fptu.capstone.gymmanagesystem.network.CategoryApiService
 import fptu.capstone.gymmanagesystem.network.ClassApiService
+import fptu.capstone.gymmanagesystem.network.CourseApiService
 import fptu.capstone.gymmanagesystem.network.InquiryApiService
+import fptu.capstone.gymmanagesystem.network.LessonApiService
+import fptu.capstone.gymmanagesystem.network.MemberApiService
 import fptu.capstone.gymmanagesystem.network.UserApiService
 import fptu.capstone.gymmanagesystem.utils.SessionManager
 import okhttp3.OkHttpClient
@@ -64,6 +68,12 @@ object NetworkModule {
 
     @Singleton
     @Provides
+    fun provideCourseApiService(retrofit: Retrofit): CourseApiService {
+        return retrofit.create(CourseApiService::class.java)
+    }
+
+    @Singleton
+    @Provides
     fun provideClassApiService(retrofit: Retrofit): ClassApiService {
         return retrofit.create(ClassApiService::class.java)
     }
@@ -84,5 +94,23 @@ object NetworkModule {
     @Provides
     fun provideInquiryApiService(retrofit: Retrofit): InquiryApiService {
         return retrofit.create(InquiryApiService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideCategoryApiService(retrofit: Retrofit): CategoryApiService {
+        return retrofit.create(CategoryApiService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideLessonApiService(retrofit: Retrofit): LessonApiService {
+        return retrofit.create(LessonApiService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideMemberApiService(retrofit: Retrofit): MemberApiService {
+        return retrofit.create(MemberApiService::class.java)
     }
 }

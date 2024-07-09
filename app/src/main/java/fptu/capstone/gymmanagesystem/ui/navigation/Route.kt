@@ -11,6 +11,12 @@ sealed class Route(val route: String) {
             return "profileDetail/$id"
         }
     }
+    object Course : Route("course")
+    object CourseDetail : Route("courseDetail/{id}"){
+        fun createRouteWithId(id: String): String {
+            return "courseDetail/$id"
+        }
+    }
     object Class : Route("class")
     object AllClass : Route("allClass")
     object ClassDetail : Route("classDetail/{id}"){

@@ -17,7 +17,6 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -167,13 +166,17 @@ fun InquiryScreen(
                     userId
                 )
             }
-            if (deleteState is DataState.Success) {
-                LaunchedEffect(Unit) {
+            when (deleteState) {
+                is DataState.Success -> {
                     Toast.makeText(context, "Inquiry deleted successfully", Toast.LENGTH_SHORT).show()
+                    inquiryViewModel.resetDeleteState()
                 }
-            } else if (deleteState is DataState.Error) {
-                LaunchedEffect(Unit) {
+                is DataState.Error -> {
                     Toast.makeText(context, (deleteState as DataState.Error).message, Toast.LENGTH_SHORT).show()
+                    inquiryViewModel.resetDeleteState()
+                }
+                else -> {
+                    // Do nothing for other states
                 }
             }
         })

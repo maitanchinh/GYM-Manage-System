@@ -55,7 +55,9 @@ fun ProfileScreen(
             .padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally
     ) {
         AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current).data(user?.avatarUrl).placeholder( R.drawable.avatar_placeholder).error(R.drawable.avatar_placeholder).build(),
+            model = ImageRequest.Builder(LocalContext.current).data(user?.avatarUrl)
+                .placeholder(R.drawable.avatar_placeholder).error(R.drawable.avatar_placeholder)
+                .build(),
             contentDescription = null,
             modifier = Modifier
                 .size(150.dp)
@@ -91,7 +93,7 @@ fun ProfileScreen(
                     horizontalArrangement = Arrangement.Start,
                     verticalAlignment = Alignment.CenterVertically,
 
-                ) {
+                    ) {
                     Icon(imageVector = Icons.Rounded.Person, contentDescription = null)
                     Spacer(modifier = Modifier.padding(start = 32.dp))
                     Text(

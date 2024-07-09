@@ -121,4 +121,8 @@ class InquiryViewModel @Inject constructor(private val inquiryRepository: Inquir
             }
         }
     }
+
+    fun resetDeleteState() {
+        _deleteState.value = DataState.Idle
+    }
 }

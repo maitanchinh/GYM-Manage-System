@@ -1,8 +1,10 @@
 package fptu.capstone.gymmanagesystem.ui.dashboard
 
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -23,13 +25,13 @@ fun BottomNavigationBar(
     val items = if (isLoggedIn) {
         listOf(
             BottomNavItem.Schedule,
-            BottomNavItem.Class,
+            BottomNavItem.Course,
             BottomNavItem.Inquiry,
             BottomNavItem.Profile,
         )
     } else {
         listOf(
-            BottomNavItem.Class,
+            BottomNavItem.Course,
             BottomNavItem.Profile,
         )
     }
@@ -38,6 +40,9 @@ fun BottomNavigationBar(
         val currentRoute = navBackStackEntry?.destination?.route
         items.forEach { item ->
             NavigationBarItem(
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = MaterialTheme.colorScheme.onSurface
+                ),
 //                modifier = Modifier.background(color = MaterialTheme.colorScheme.primary),
                 icon = { Icon(painterResource(id = item.icon), contentDescription = item.title) },
 //                label = { Text(item.title) },

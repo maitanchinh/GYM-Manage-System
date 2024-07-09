@@ -1,4 +1,4 @@
-package fptu.capstone.gymmanagesystem.ui.gymclass
+package fptu.capstone.gymmanagesystem.ui.course
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,11 +23,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.flowlayout.FlowRow
 import fptu.capstone.gymmanagesystem.utils.DataState
-import fptu.capstone.gymmanagesystem.viewmodel.ClassViewModel
+import fptu.capstone.gymmanagesystem.viewmodel.CourseViewModel
 
 @Composable
-fun AllClassScreen(viewModel: ClassViewModel = hiltViewModel(), onClassClick: (id: String) -> Unit = {}) {
-    val classes = viewModel.classes.collectAsState()
+fun AllCourseScreen(viewModel: CourseViewModel = hiltViewModel(), onCourseClick: (id: String) -> Unit = {}) {
+    val classes = viewModel.courses.collectAsState()
     val category = listOf("All", "Cardio", "Strength", "Yoga", "Dance", "Boxing", "Pilates")
     val selectedCategory = remember { mutableStateOf("All") }
     LazyVerticalGrid(
@@ -38,7 +38,7 @@ fun AllClassScreen(viewModel: ClassViewModel = hiltViewModel(), onClassClick: (i
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        val items = (classes.value as? DataState.Success)?.data?.classes ?: emptyList()
+        val items = (classes.value as? DataState.Success)?.data?.courses ?: emptyList()
 //        val items = classes.value.classes
         item(span = { GridItemSpan(2) }) {
             Column {
@@ -61,7 +61,7 @@ fun AllClassScreen(viewModel: ClassViewModel = hiltViewModel(), onClassClick: (i
             }
         }
         items(items.size) { index ->
-            ClassCard(items[index], onClassClick = onClassClick)
+            CourseCard(items[index], onCourseClick = onCourseClick)
         }
     }
 }

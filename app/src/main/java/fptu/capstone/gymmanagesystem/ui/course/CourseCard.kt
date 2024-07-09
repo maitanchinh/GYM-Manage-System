@@ -1,4 +1,4 @@
-package fptu.capstone.gymmanagesystem.ui.gymclass
+package fptu.capstone.gymmanagesystem.ui.course
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,19 +24,19 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import fptu.capstone.gymmanagesystem.R
-import fptu.capstone.gymmanagesystem.model.GClass
+import fptu.capstone.gymmanagesystem.model.Course
 import fptu.capstone.gymmanagesystem.ui.component.Gap
 
 @Composable
-fun ClassCard(gymClass: GClass = GClass(), onClassClick: (id: String) -> Unit) {
-    val thumbnailUrl = gymClass.thumbnailUrl
+fun CourseCard(course: Course = Course(), onCourseClick: (id: String) -> Unit) {
+    val thumbnailUrl = course.thumbnailUrl
     Box(
         modifier = Modifier
 //                        .padding(8.dp)
             .fillMaxSize()
             .clip(shape = RoundedCornerShape(5))
             .background(MaterialTheme.colorScheme.secondaryContainer)
-            .clickable { onClassClick(gymClass.id!!) },
+            .clickable { onCourseClick(course.id!!) },
         contentAlignment = Alignment.Center
     ) {
 
@@ -62,15 +62,15 @@ fun ClassCard(gymClass: GClass = GClass(), onClassClick: (id: String) -> Unit) {
 //            )
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    text = gymClass.name ?: "No name",
+                    text = course.name ?: "No name",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
                 )
-                Gap.k4.Height()
-                Text(
-                    text = "by ${gymClass.trainer?.name ?: "No trainer"}",
-                    style = MaterialTheme.typography.bodySmall,
-                )
+//                Gap.k4.Height()
+//                Text(
+//                    text = "by ${course.trainer?.name ?: "No trainer"}",
+//                    style = MaterialTheme.typography.bodySmall,
+//                )
 //                Gap.k4.Height()
 //                Text(
 //                    text = "1,050,000 ₫",
@@ -84,11 +84,11 @@ fun ClassCard(gymClass: GClass = GClass(), onClassClick: (id: String) -> Unit) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "${gymClass.participant}/${gymClass.totalMember ?: 0} slots",
+                        text = "${course.totalMember ?: 0} slots",
                         style = MaterialTheme.typography.bodySmall,
                     )
                     Text(
-                        text = "${gymClass.totalLesson} lessons",
+                        text = "${course.totalLesson} lessons",
                         style = MaterialTheme.typography.bodySmall,
                     )
                 }
