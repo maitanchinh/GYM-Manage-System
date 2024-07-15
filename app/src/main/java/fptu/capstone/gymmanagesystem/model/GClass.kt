@@ -16,4 +16,5 @@ data class GClass(
     @SerializedName("totalMember") var totalMember: Int? = null,
     @SerializedName("lessonCount") var lessonCount: Int? = null,
     @SerializedName("participant") var participant: Int? = null,
+    var lessons: List<Lesson> = listOf(),
 )

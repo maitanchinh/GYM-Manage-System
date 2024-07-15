@@ -53,7 +53,6 @@ import fptu.capstone.gymmanagesystem.model.Classes
 import fptu.capstone.gymmanagesystem.model.Course
 import fptu.capstone.gymmanagesystem.model.Courses
 import fptu.capstone.gymmanagesystem.model.FilterRequestBody
-import fptu.capstone.gymmanagesystem.model.GClass
 import fptu.capstone.gymmanagesystem.model.Pagination
 import fptu.capstone.gymmanagesystem.ui.component.Gap
 import fptu.capstone.gymmanagesystem.ui.component.shimmerLoadingAnimation
@@ -79,6 +78,7 @@ fun ScheduleScreen(
     val coursesState by courseViewModel.courses.collectAsState()
     val lessons by classViewModel.lessons.collectAsState()
     var courses: ArrayList<Course> = arrayListOf()
+    var expendedClass by remember { mutableStateOf<Int?>(null) }
     when (coursesState) {
         is DataState.Success -> {
             courses = (coursesState as DataState.Success<Courses>).data.courses
@@ -86,7 +86,6 @@ fun ScheduleScreen(
 
         else -> {}
     }
-    val myClasses: ArrayList<GClass> = arrayListOf()
 
     var isRefreshing by remember { mutableStateOf(false) }
     val swipeRefreshState by remember {
@@ -106,7 +105,6 @@ fun ScheduleScreen(
 
     SwipeRefresh(state = swipeRefreshState, onRefresh = {
         isRefreshing = true
-        myClasses.clear()
         classViewModel.fetchClassesEnrolled(FilterRequestBody(status = "Active"))
         classViewModel.fetchLessons(
             FilterRequestBody(
@@ -204,9 +202,8 @@ fun ScheduleScreen(
 
                 is DataState.Success -> {
                     val classes = classesState as DataState.Success<Classes>
-
                     items(classes.data.classes.size) { index ->
-                        val gClass = classes.data.classes[index]
+                        val gClass = classes.data.classes[index].copy(lessons = lessons.lessons.filter { it.classId == classes.data.classes[index].id })
                         val myCourses = ArrayList<Course>()
                         courses.find { it.classes.find { cl -> cl.id == gClass.id } != null }
                             ?.copy(classes = arrayListOf(gClass))?.let { myCourses.add(it) }
@@ -215,7 +212,7 @@ fun ScheduleScreen(
                                 state = rememberPagerState(pageCount = { myCourses.size }),
                                 pageSpacing = 16.dp
                             ) { page ->
-                                InDay(myCourses[page], lessons.lessons)
+                                InDay(myCourses[page])
                             }
                         } else Text(text = "You have no class")
                     }
@@ -402,11 +399,14 @@ fun ScheduleScreen(
 
                     items(classes.data.classes.size) { index ->
                         val gClass = classes.data.classes[index]
+                        .copy(lessons = lessons.lessons.filter { it.classId == classes.data.classes[index].id })
                         val myCourse =
                             courses.find { it.classes.find { cl -> cl.id == gClass.id } != null }
                                 ?.copy(classes = arrayListOf(gClass))
                         if (myCourse != null) {
-                            MyClass(course = myCourse, lessons = lessons.lessons)
+                            MyClass(course = myCourse, isExpanded = expendedClass == index) {
+                                expendedClass = if (expendedClass == index) null else index
+                            }
                         } else Text(text = "You have no class")
                     }
 

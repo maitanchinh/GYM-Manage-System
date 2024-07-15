@@ -27,13 +27,13 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import fptu.capstone.gymmanagesystem.R
 import fptu.capstone.gymmanagesystem.model.Course
-import fptu.capstone.gymmanagesystem.model.Lesson
 import fptu.capstone.gymmanagesystem.ui.component.Gap
 import java.time.Duration
 import java.time.LocalTime
 
 @Composable
-fun InDay(course: Course, lessons: ArrayList<Lesson> = arrayListOf()) {
+fun InDay(course: Course) {
+    val lessons = course.classes.first().lessons
     val upcomingLesson = lessons.firstOrNull { it.status == "Hasn't start" }
     println("Completed: ${lessons.count { it.status == "Completed" }}")
     Box(

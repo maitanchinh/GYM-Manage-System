@@ -67,7 +67,7 @@ fun SignupScreen(
 //        TextField(label = "Address", value = "", onTextChange = {})
         Gap.k32.Height()
         LargeButton(text = "Sign Up", isLoading = userState.value is DataState.Loading, enabled = name.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty() && confirmPassword.isNotEmpty() && password == confirmPassword, onClick = {
-            userViewModel.signup(SignUpRequest(name, email, password))})
+            userViewModel.signup(SignUpRequest(name = name, email = email, password = password))})
         Gap.k16.Height()
         when(userState.value) {
             is DataState.Error -> {
