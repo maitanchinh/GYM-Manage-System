@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -23,10 +24,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,18 +47,22 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.google.accompanist.swiperefresh.SwipeRefreshState
 import fptu.capstone.gymmanagesystem.R
 import fptu.capstone.gymmanagesystem.model.Classes
+import fptu.capstone.gymmanagesystem.model.Course
+import fptu.capstone.gymmanagesystem.model.Courses
 import fptu.capstone.gymmanagesystem.model.FilterRequestBody
 import fptu.capstone.gymmanagesystem.model.GClass
+import fptu.capstone.gymmanagesystem.model.Pagination
 import fptu.capstone.gymmanagesystem.ui.component.Gap
-import fptu.capstone.gymmanagesystem.ui.component.shimmerBrush
+import fptu.capstone.gymmanagesystem.ui.component.shimmerLoadingAnimation
 import fptu.capstone.gymmanagesystem.ui.schedule.components.InDay
 import fptu.capstone.gymmanagesystem.ui.schedule.components.MyClass
 import fptu.capstone.gymmanagesystem.ui.schedule.components.WeekCalendar
 import fptu.capstone.gymmanagesystem.utils.DataState
 import fptu.capstone.gymmanagesystem.viewmodel.ClassViewModel
+import fptu.capstone.gymmanagesystem.viewmodel.CourseViewModel
 import fptu.capstone.gymmanagesystem.viewmodel.UserViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -63,246 +70,357 @@ import fptu.capstone.gymmanagesystem.viewmodel.UserViewModel
 fun ScheduleScreen(
     modifier: Modifier = Modifier,
     userViewModel: UserViewModel = hiltViewModel(),
-    classViewModel: ClassViewModel = hiltViewModel()
+    classViewModel: ClassViewModel = hiltViewModel(),
+    courseViewModel: CourseViewModel = hiltViewModel()
 ) {
     val notificationCount by remember { mutableStateOf(2) }
     val user = userViewModel.getUser()
     val classesState by classViewModel.classes.collectAsState()
-    val members by classViewModel.classMembers.collectAsState()
-    val myClasses = arrayListOf(GClass())
+    val coursesState by courseViewModel.courses.collectAsState()
+    val lessons by classViewModel.lessons.collectAsState()
+    var courses: ArrayList<Course> = arrayListOf()
+    when (coursesState) {
+        is DataState.Success -> {
+            courses = (coursesState as DataState.Success<Courses>).data.courses
+        }
 
-    val isRefreshing by remember { mutableStateOf(false) }
-    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isRefreshing)
+        else -> {}
+    }
+    val myClasses: ArrayList<GClass> = arrayListOf()
+
+    var isRefreshing by remember { mutableStateOf(false) }
+    val swipeRefreshState by remember {
+        mutableStateOf(SwipeRefreshState(isRefreshing = isRefreshing))
+    }
+
+    LaunchedEffect(Unit) {
+        classViewModel.fetchClassesEnrolled(FilterRequestBody(status = "Active"))
+        classViewModel.fetchLessons(
+            FilterRequestBody(
+                pagination = Pagination(pageSize = 100),
+                orderBy = "StartTime",
+                isAscending = true
+            )
+        )
+    }
 
     SwipeRefresh(state = swipeRefreshState, onRefresh = {
-        swipeRefreshState.isRefreshing = true
-        classViewModel.refreshClasses()
-        swipeRefreshState.isRefreshing = false
+        isRefreshing = true
+        myClasses.clear()
+        classViewModel.fetchClassesEnrolled(FilterRequestBody(status = "Active"))
+        classViewModel.fetchLessons(
+            FilterRequestBody(
+                pagination = Pagination(pageSize = 100),
+                orderBy = "StartTime",
+                isAscending = true
+            )
+        )
+        isRefreshing = false
     }) {
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp)
+                .padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Row {
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current).data(user?.avatarUrl)
-                        .placeholder(R.drawable.avatar_placeholder)
-                        .error(R.drawable.avatar_placeholder)
-                        .build(),
-                    contentDescription = "Avatar",
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(shape = RoundedCornerShape(20.dp)),
-                    contentScale = ContentScale.Crop
-                )
-                Gap.k16.Width()
-                Column(
-                    verticalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = "Hello",
-                        style = MaterialTheme.typography.bodySmall,
-                        fontWeight = MaterialTheme.typography.bodySmall.fontWeight,
+            item {
+                Row {
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current).data(user?.avatarUrl)
+                            .placeholder(R.drawable.avatar_placeholder)
+                            .error(R.drawable.avatar_placeholder)
+                            .build(),
+                        contentDescription = "Avatar",
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(shape = RoundedCornerShape(20.dp)),
+                        contentScale = ContentScale.Crop
                     )
-                    //                Gap.k8.Height()
-                    Text(
-                        text = user?.name!!,
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.Bold,
-                    )
-                }
-                Box(modifier = Modifier.size(40.dp)) {
-                    IconButton(onClick = { /*TODO*/ }) {
-                        BadgedBox(badge = {
-                            if (notificationCount > 0) {
-                                Badge(
-                                    containerColor = MaterialTheme.colorScheme.error,
-                                    contentColor = Color.White,
-                                    modifier = Modifier.offset(x = (-10).dp, y = 10.dp)
-                                ) {
-                                    Text(text = notificationCount.toString())
+                    Gap.k16.Width()
+                    Column(
+                        verticalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            text = "Hello",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = MaterialTheme.typography.bodySmall.fontWeight,
+                        )
+                        //                Gap.k8.Height()
+                        Text(
+                            text = user?.name!!,
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
+                    Box(modifier = Modifier.size(40.dp)) {
+                        IconButton(onClick = { /*TODO*/ }) {
+                            BadgedBox(badge = {
+                                if (notificationCount > 0) {
+                                    Badge(
+                                        containerColor = MaterialTheme.colorScheme.error,
+                                        contentColor = Color.White,
+                                        modifier = Modifier.offset(x = (-10).dp, y = 10.dp)
+                                    ) {
+                                        Text(text = notificationCount.toString())
+                                    }
                                 }
+                            }) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.round_notifications_32),
+                                    contentDescription = "Notification",
+                                    tint = Color(0xFFED9455)
+                                )
                             }
-                        }) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.round_notifications_32),
-                                contentDescription = "Notification",
-                                tint = Color(0xFFED9455)
-                            )
                         }
                     }
                 }
+
             }
-            Gap.k16.Height()
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(shape = RoundedCornerShape(16.dp))
-                    .background(MaterialTheme.colorScheme.secondaryContainer)
-                    //                .border(1.dp, Color.LightGray, shape = RoundedCornerShape(16.dp))
-                    .padding(vertical = 16.dp, horizontal = 16.dp)
-            ) {
-                WeekCalendar()
-            }
-            Gap.k32.Height()
-            HorizontalPager(
-                state = rememberPagerState(pageCount = { 3 }),
-                pageSpacing = 16.dp
-            ) { page ->
-                InDay(page)
-            }
-            Gap.k32.Height()
-            Text(
-                text = "Overview",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
-            )
-            Gap.k16.Height()
-            Row {
+            item {
                 Box(
                     modifier = Modifier
-                        .weight(1f)
+                        .fillMaxWidth()
                         .clip(shape = RoundedCornerShape(16.dp))
                         .background(MaterialTheme.colorScheme.secondaryContainer)
-                        //                    .border(1.dp, Color.LightGray, shape = RoundedCornerShape(16.dp))
-                        .padding(16.dp)
+                        //                .border(1.dp, Color.LightGray, shape = RoundedCornerShape(16.dp))
+                        .padding(vertical = 16.dp, horizontal = 16.dp)
                 ) {
-                    Column {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.round_class_24),
-                                contentDescription = null,
-                                tint = Color.Gray
-                            )
-                            Gap.k8.Width()
-                            Text(
-                                text = "Education",
-                                style = MaterialTheme.typography.titleLarge,
-                                //                            fontWeight = FontWeight.Medium
-                                color = Color.Gray
-                            )
-                        }
-                        Gap.k8.Height()
-                        BasicText(text = buildAnnotatedString {
-                            withStyle(
-                                style = SpanStyle(
-                                    color = Color.Black,
-                                    fontSize = 24.sp,
-                                    fontWeight = FontWeight.Medium
-                                )
-                            ) { append("10") }
-                            withStyle(
-                                style = SpanStyle(
-                                    color = Color.Gray,
-                                )
-                            ) { append(" classes") }
-                        }, style = MaterialTheme.typography.bodyMedium)
-                    }
+                    WeekCalendar()
                 }
-                Gap.k16.Width()
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .clip(shape = RoundedCornerShape(16.dp))
-                        .background(MaterialTheme.colorScheme.secondaryContainer)
-                        //                    .border(1.dp, Color.LightGray, shape = RoundedCornerShape(16.dp))
-                        .padding(16.dp)
-                ) {
-                    Column {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.round_access_time_filled_24),
-                                contentDescription = null,
-                                tint = Color.Gray
-                            )
-                            Gap.k8.Width()
-                            Text(
-                                text = "Duration",
-                                style = MaterialTheme.typography.titleLarge,
-                                //                            fontWeight = FontWeight.Medium,
-                                color = Color.Gray
-                            )
-                        }
-                        Gap.k8.Height()
-                        BasicText(text = buildAnnotatedString {
-                            withStyle(
-                                style = SpanStyle(
-                                    color = Color.Black,
-                                    fontSize = 24.sp,
-                                    fontWeight = FontWeight.Medium
-                                )
-                            ) { append("10") }
-                            withStyle(
-                                style = SpanStyle(
-                                    color = Color.Gray,
-                                )
-                            ) { append("h ") }
-                            withStyle(
-                                style = SpanStyle(
-                                    color = Color.Black,
-                                    fontSize = 24.sp,
-                                    fontWeight = FontWeight.Medium
-                                )
-                            ) { append("30") }
-                            withStyle(
-                                style = SpanStyle(
-                                    color = Color.Gray,
-                                )
-                            ) { append("m") }
-                        }, style = MaterialTheme.typography.bodyMedium)
-                    }
-                }
+
             }
-            Gap.k32.Height()
-            Text(
-                text = "My Classes",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
-            )
-            Gap.k16.Height()
             when (classesState) {
                 is DataState.Loading -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(shimmerBrush(targetValues = 1300f, showShimmer = true))
-                    )
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(227.dp)
+                                .clip(shape = RoundedCornerShape(16.dp))
+                                .shimmerLoadingAnimation()
+                        )
+                    }
                 }
 
                 is DataState.Success -> {
                     val classes = classesState as DataState.Success<Classes>
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-//                        contentPadding = PaddingValues(16.dp)
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                        classes.data.classes.forEach {
-                            classViewModel.fetchMembers(FilterRequestBody(search = it.id))
-                            if (members.classMembers.isNotEmpty()) {
-                                members.classMembers.forEach { member ->
-                                    if (member.member?.id == user?.id && member.member?.status == "Active") {
-                                        myClasses.add(it)
-                                    }}
-                            }
 
-                        }
-                        items(myClasses.size) { index ->
-                            val myClass = myClasses[index]
-                            MyClass(gGlass = myClass)
-                        }
+                    items(classes.data.classes.size) { index ->
+                        val gClass = classes.data.classes[index]
+                        val myCourses = ArrayList<Course>()
+                        courses.find { it.classes.find { cl -> cl.id == gClass.id } != null }
+                            ?.copy(classes = arrayListOf(gClass))?.let { myCourses.add(it) }
+                        if (myCourses.isNotEmpty()) {
+                            HorizontalPager(
+                                state = rememberPagerState(pageCount = { myCourses.size }),
+                                pageSpacing = 16.dp
+                            ) { page ->
+                                InDay(myCourses[page], lessons.lessons)
+                            }
+                        } else Text(text = "You have no class")
                     }
+
                 }
 
                 is DataState.Error -> {
-                    // Error
+                    item { Text(text = "Something went wrong, please try again later") }
                 }
 
                 else -> {
                     // Empty
                 }
             }
+            item {
+                Column {
+                    Gap.k16.Height()
+                    Text(
+                        text = "Overview",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Gap.k16.Height()
+                    when (classesState) {
+                        is DataState.Loading -> {
+                            Row {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(97.dp)
+                                        .clip(shape = RoundedCornerShape(20))
+                                        .shimmerLoadingAnimation()
+                                )
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(97.dp)
+                                        .clip(shape = RoundedCornerShape(20))
+                                        .shimmerLoadingAnimation()
+                                )
+                            }
+                        }
+
+                        is DataState.Success -> {
+                            val classes = (classesState as DataState.Success<Classes>).data.classes
+                            Row {
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clip(shape = RoundedCornerShape(16.dp))
+                                        .background(MaterialTheme.colorScheme.secondaryContainer)
+                                        //                    .border(1.dp, Color.LightGray, shape = RoundedCornerShape(16.dp))
+                                        .padding(16.dp)
+                                ) {
+                                    Column {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Icon(
+                                                painter = painterResource(id = R.drawable.round_class_24),
+                                                contentDescription = null,
+                                                tint = Color.Gray
+                                            )
+                                            Gap.k8.Width()
+                                            Text(
+                                                text = "Education",
+                                                style = MaterialTheme.typography.titleLarge,
+                                                //                            fontWeight = FontWeight.Medium
+                                                color = Color.Gray
+                                            )
+                                        }
+                                        Gap.k8.Height()
+                                        BasicText(text = buildAnnotatedString {
+                                            withStyle(
+                                                style = SpanStyle(
+                                                    color = Color.Black,
+                                                    fontSize = 24.sp,
+                                                    fontWeight = FontWeight.Medium
+                                                )
+                                            ) { append(classes.size.toString()) }
+                                            withStyle(
+                                                style = SpanStyle(
+                                                    color = Color.Gray,
+                                                )
+                                            ) { append(" classes") }
+                                        }, style = MaterialTheme.typography.bodyMedium)
+                                    }
+                                }
+                                Gap.k16.Width()
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clip(shape = RoundedCornerShape(16.dp))
+                                        .background(MaterialTheme.colorScheme.secondaryContainer)
+                                        //                    .border(1.dp, Color.LightGray, shape = RoundedCornerShape(16.dp))
+                                        .padding(16.dp)
+                                ) {
+                                    Column {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Icon(
+                                                painter = painterResource(id = R.drawable.round_access_time_filled_24),
+                                                contentDescription = null,
+                                                tint = Color.Gray
+                                            )
+                                            Gap.k8.Width()
+                                            Text(
+                                                text = "Duration",
+                                                style = MaterialTheme.typography.titleLarge,
+                                                //                            fontWeight = FontWeight.Medium,
+                                                color = Color.Gray
+                                            )
+                                        }
+                                        Gap.k8.Height()
+                                        BasicText(text = buildAnnotatedString {
+                                            withStyle(
+                                                style = SpanStyle(
+                                                    color = Color.Black,
+                                                    fontSize = 24.sp,
+                                                    fontWeight = FontWeight.Medium
+                                                )
+                                            ) { append("10") }
+                                            withStyle(
+                                                style = SpanStyle(
+                                                    color = Color.Gray,
+                                                )
+                                            ) { append("h ") }
+                                            withStyle(
+                                                style = SpanStyle(
+                                                    color = Color.Black,
+                                                    fontSize = 24.sp,
+                                                    fontWeight = FontWeight.Medium
+                                                )
+                                            ) { append("30") }
+                                            withStyle(
+                                                style = SpanStyle(
+                                                    color = Color.Gray,
+                                                )
+                                            ) { append("m") }
+                                        }, style = MaterialTheme.typography.bodyMedium)
+                                    }
+                                }
+                            }
+                        }
+
+                        is DataState.Error -> {
+                            Text(text = "Something went wrong, please try again later")
+                        }
+
+                            else -> {
+                                // Empty
+                            }
+                    }
+                }
+
+            }
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+//                        .padding(horizontal = 16.dp)
+                ) {
+                    Gap.k16.Height()
+                    Text(
+                        text = "My Classes",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                }
+            }
+            when (classesState) {
+                is DataState.Loading -> {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(70.dp)
+                                .clip(shape = RoundedCornerShape(20))
+                                .shimmerLoadingAnimation()
+                        )
+                    }
+                }
+
+                is DataState.Success -> {
+                    val classes = classesState as DataState.Success<Classes>
+
+                    items(classes.data.classes.size) { index ->
+                        val gClass = classes.data.classes[index]
+                        val myCourse =
+                            courses.find { it.classes.find { cl -> cl.id == gClass.id } != null }
+                                ?.copy(classes = arrayListOf(gClass))
+                        if (myCourse != null) {
+                            MyClass(course = myCourse, lessons = lessons.lessons)
+                        } else Text(text = "You have no class")
+                    }
+
+                }
+
+                is DataState.Error -> {
+                    item { Text(text = "Something went wrong, please try again later") }
+                }
+
+                else -> {
+                    // Empty
+                }
+            }
+
         }
     }
 }

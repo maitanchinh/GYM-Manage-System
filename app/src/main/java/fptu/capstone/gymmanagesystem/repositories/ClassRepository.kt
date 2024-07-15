@@ -8,4 +8,6 @@ class ClassRepository @Inject constructor(private val classApiService: ClassApiS
     suspend fun getClasses(filterRequestBody: FilterRequestBody) = classApiService.getClasses(filterRequestBody)
 
     suspend fun getClassById(id: String) = classApiService.getClassById(id)
+
+    suspend fun getClassesEnrolled(filterRequestBody: FilterRequestBody) = classApiService.getClassesEnrolled(filterRequestBody)
 }

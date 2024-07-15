@@ -26,10 +26,16 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import fptu.capstone.gymmanagesystem.R
+import fptu.capstone.gymmanagesystem.model.Course
+import fptu.capstone.gymmanagesystem.model.Lesson
 import fptu.capstone.gymmanagesystem.ui.component.Gap
+import java.time.Duration
+import java.time.LocalTime
 
 @Composable
-fun InDay(page: Int) {
+fun InDay(course: Course, lessons: ArrayList<Lesson> = arrayListOf()) {
+    val upcomingLesson = lessons.firstOrNull { it.status == "Hasn't start" }
+    println("Completed: ${lessons.count { it.status == "Completed" }}")
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -42,7 +48,7 @@ fun InDay(page: Int) {
             Row(modifier = Modifier.padding(12.dp)) {
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data("https://bizweb.dktcdn.net/100/011/344/files/tac-dung-cua-yoga.webp?v=1680778752047")
+                        .data(course.thumbnailUrl)
                         .placeholder(R.drawable.placeholder).error(R.drawable.placeholder)
                         .build(),
                     contentDescription = "Course Image",
@@ -54,19 +60,19 @@ fun InDay(page: Int) {
                 Gap.k16.Width()
                 Column {
                     Text(
-                        text = "#" + (page + 1).toString(),
+                        text = "#" + (lessons.indexOf(upcomingLesson) + 1).toString(),
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.Gray
                     )
                     Gap.k8.Height()
                     Text(
-                        text = "Gratitude meditations",
+                        text = if (upcomingLesson != null) "${upcomingLesson.name}" else "You have completed all lessons!",
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Medium
                     )
                     Gap.k8.Height()
                     Text(
-                        text = "90 min",
+                        text = "${Duration.between(LocalTime.parse(course.classes[0].from), LocalTime.parse(course.classes[0].to)).toMinutes()} min",
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
@@ -81,14 +87,14 @@ fun InDay(page: Int) {
             ) {
                 Column {
                     Text(
-                        text = "Yoga for beginner",
+                        text = "${course.name}",
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Medium
 
                     )
                     Gap.k8.Height()
                     LinearProgressIndicator(
-                        progress = { 0.3f }, modifier = Modifier
+                        progress = {if(lessons.isNotEmpty()) (lessons.count { it.status == "Completed" }.toFloat() / lessons.size) else 0f }, modifier = Modifier
                             .fillMaxWidth()
                             .clip(shape = RoundedCornerShape(8.dp))
                     )
@@ -100,7 +106,7 @@ fun InDay(page: Int) {
                                     color = Color.Black,
                                     fontWeight = FontWeight.Medium
                                 )
-                            ) { append("10/30") }
+                            ) { append("${lessons.count { it.status == "Completed" }}/${lessons.size}") }
                             withStyle(
                                 style = SpanStyle(
                                     color = Color.Gray,

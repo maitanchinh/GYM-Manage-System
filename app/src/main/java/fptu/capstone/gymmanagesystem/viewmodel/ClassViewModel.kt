@@ -26,16 +26,16 @@ class ClassViewModel @Inject constructor(
     ViewModel() {
 
     //    private val _classes = MutableStateFlow(Classes())
-    private val _classes = MutableStateFlow<DataState<Classes>>(DataState.Loading)
+    private val _classes = MutableStateFlow<DataState<Classes>>(DataState.Idle)
     private val _class = MutableStateFlow(GClass())
     private val _lessons = MutableStateFlow(Lessons())
-    private val _classMembers = MutableStateFlow(ClassMembers())
+    private val _classMembers = MutableStateFlow<DataState<ClassMembers>>(DataState.Idle)
 
     //    val classes: StateFlow<Classes> = _classes
     val classes: StateFlow<DataState<Classes>> = _classes
     val gClass: StateFlow<GClass> = _class
     val lessons: StateFlow<Lessons> = _lessons
-    val classMembers: StateFlow<ClassMembers> = _classMembers
+    val classMembers: StateFlow<DataState<ClassMembers>> = _classMembers
 
     init {
         fetchClasses(FilterRequestBody())
@@ -47,6 +47,7 @@ class ClassViewModel @Inject constructor(
 
     private fun fetchClasses(filterRequestBody: FilterRequestBody) {
         viewModelScope.launch {
+            _classes.value = DataState.Loading
             try {
                 val response: Classes = classRepository.getClasses(filterRequestBody)
                 _classes.value = DataState.Success(response)
@@ -59,27 +60,43 @@ class ClassViewModel @Inject constructor(
         }
     }
 
-    private fun fetchLessons(filterRequestBody: FilterRequestBody) {
+    fun fetchLessons(filterRequestBody: FilterRequestBody) {
         viewModelScope.launch {
             try {
                 val response = lessonRepository.getLessons(filterRequestBody)
-                println("Response: $response")
+                _lessons.value = response
             } catch (e: Exception) {
                 e.printStackTrace()
-                println("Error: ${e.message}")
+                println("Error at fetchLessons: ${e.message}")
             }
         }
     }
 
     fun fetchMembers(filterRequestBody: FilterRequestBody) {
         viewModelScope.launch {
+            _classMembers.value = DataState.Loading
             try {
                 val response = memberRepository.getMembers(filterRequestBody)
-                _classMembers.value = response
+                _classMembers.value = DataState.Success(response)
                 println("Response: $response")
             } catch (e: Exception) {
                 e.printStackTrace()
                 println("Error at fetchMembers: ${e.message}")
+                _classMembers.value = DataState.Error(e.message ?: "Unknown error")
+            }
+        }
+    }
+
+    fun fetchClassesEnrolled(filterRequestBody: FilterRequestBody) {
+        viewModelScope.launch {
+            _classes.value = DataState.Loading
+            try {
+                val response: Classes = classRepository.getClassesEnrolled(filterRequestBody)
+                _classes.value = DataState.Success(response)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                println("Error at fetchClassesEnrolled: ${e.message}")
+                _classes.value = DataState.Error(e.message ?: "Unknown error")
             }
         }
     }
