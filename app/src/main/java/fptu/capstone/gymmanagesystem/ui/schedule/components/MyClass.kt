@@ -31,6 +31,8 @@ import fptu.capstone.gymmanagesystem.model.Course
 import fptu.capstone.gymmanagesystem.model.Lesson
 import fptu.capstone.gymmanagesystem.ui.component.Gap
 import fptu.capstone.gymmanagesystem.ui.theme.Purple40
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun MyClass(modifier: Modifier = Modifier, course: Course, lessons: ArrayList<Lesson>) {
@@ -70,7 +72,7 @@ fun MyClass(modifier: Modifier = Modifier, course: Course, lessons: ArrayList<Le
                 )
                 Gap.k8.Height()
                 Text(
-                    text = "Everyday 7:00 - 8:00",
+                    text = "${LocalTime.parse(course.classes[0].from, DateTimeFormatter.ofPattern("HH:mm:ss")).format(DateTimeFormatter.ofPattern("HH:mm"))} - ${LocalTime.parse(course.classes[0].to, DateTimeFormatter.ofPattern("HH:mm:ss")).format(DateTimeFormatter.ofPattern("HH:mm"))}",
                     style = MaterialTheme.typography.bodySmall,
                 )
             }
