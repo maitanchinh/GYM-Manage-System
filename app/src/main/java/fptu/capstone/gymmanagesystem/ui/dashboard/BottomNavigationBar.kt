@@ -46,7 +46,7 @@ fun BottomNavigationBar(
 //                modifier = Modifier.background(color = MaterialTheme.colorScheme.primary),
                 icon = { Icon(painterResource(id = item.icon), contentDescription = item.title) },
 //                label = { Text(item.title) },
-                selected = currentRoute?.startsWith(item.route) == true,
+                selected = if (currentRoute?.startsWith(item.route) == true) true else navBackStackEntry?.destination?.parent?.route == item.route,
                 onClick = {
                     navController.navigate(item.route) {
                         // Pop up to the start destination of the graph to

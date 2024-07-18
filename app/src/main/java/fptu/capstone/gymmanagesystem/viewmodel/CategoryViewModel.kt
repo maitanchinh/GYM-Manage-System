@@ -3,8 +3,9 @@ package fptu.capstone.gymmanagesystem.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import fptu.capstone.gymmanagesystem.model.Categories
+import fptu.capstone.gymmanagesystem.model.CourseCategory
 import fptu.capstone.gymmanagesystem.model.FilterRequestBody
+import fptu.capstone.gymmanagesystem.model.Response
 import fptu.capstone.gymmanagesystem.repositories.CategoryRepository
 import fptu.capstone.gymmanagesystem.utils.DataState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,8 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CategoryViewModel @Inject constructor(private val categoryRepository: CategoryRepository) : ViewModel(){
-    private val _categories = MutableStateFlow<DataState<Categories>>(DataState.Idle)
-    val categories : StateFlow<DataState<Categories>> = _categories
+    private val _categories = MutableStateFlow<DataState<Response<CourseCategory>>>(DataState.Idle)
+    val categories : StateFlow<DataState<Response<CourseCategory>>> = _categories
 
     init {
         fetchCategories(FilterRequestBody())

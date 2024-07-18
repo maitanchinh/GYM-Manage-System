@@ -84,7 +84,7 @@ fun InquiryScreen(
 
                     is DataState.Success -> {
                         val inquiries =
-                            (inquiriesState as? DataState.Success)?.data?.inquiries ?: emptyList()
+                            (inquiriesState as? DataState.Success)?.data?.data ?: emptyList()
                         if (inquiries.isEmpty()) {
                             Box(
                                 modifier = Modifier.fillMaxSize(),

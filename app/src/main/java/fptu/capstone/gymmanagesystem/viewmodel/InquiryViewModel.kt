@@ -4,9 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fptu.capstone.gymmanagesystem.model.FilterRequestBody
-import fptu.capstone.gymmanagesystem.model.Inquiries
 import fptu.capstone.gymmanagesystem.model.Inquiry
 import fptu.capstone.gymmanagesystem.model.InquiryRequestBody
+import fptu.capstone.gymmanagesystem.model.Response
 import fptu.capstone.gymmanagesystem.repositories.InquiryRepository
 import fptu.capstone.gymmanagesystem.utils.DataState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,8 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class InquiryViewModel @Inject constructor(private val inquiryRepository: InquiryRepository) :
     ViewModel() {
-    private val _inquiries = MutableStateFlow<DataState<Inquiries>>(DataState.Idle)
-    val inquiries: StateFlow<DataState<Inquiries>> = _inquiries
+    private val _inquiries = MutableStateFlow<DataState<Response<Inquiry>>>(DataState.Idle)
+    val inquiries: StateFlow<DataState<Response<Inquiry>>> = _inquiries
     private val _inquiry = MutableStateFlow<DataState<Inquiry>>(DataState.Idle)
     val inquiry: StateFlow<DataState<Inquiry>> = _inquiry
     private val _deleteState = MutableStateFlow<DataState<Inquiry>>(DataState.Idle)
@@ -109,10 +109,10 @@ class InquiryViewModel @Inject constructor(private val inquiryRepository: Inquir
                 _deleteState.value = DataState.Success(response)
                 val currentState = _inquiries.value
                 if (currentState is DataState.Success) {
-                    val currentList = ArrayList(currentState.data.inquiries ?: emptyList())
+                    val currentList = ArrayList(currentState.data.data ?: emptyList())
                     currentList.remove(currentList.find { it.id == id })
                     _inquiries.value =
-                        DataState.Success(currentState.data.copy(inquiries = currentList))
+                        DataState.Success(currentState.data.copy(data = currentList))
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

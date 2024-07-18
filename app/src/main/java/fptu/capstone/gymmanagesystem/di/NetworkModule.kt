@@ -11,6 +11,7 @@ import dagger.hilt.components.SingletonComponent
 import fptu.capstone.gymmanagesystem.network.AuthApiService
 import fptu.capstone.gymmanagesystem.network.CategoryApiService
 import fptu.capstone.gymmanagesystem.network.ClassApiService
+import fptu.capstone.gymmanagesystem.network.CommunicationApiService
 import fptu.capstone.gymmanagesystem.network.CourseApiService
 import fptu.capstone.gymmanagesystem.network.InquiryApiService
 import fptu.capstone.gymmanagesystem.network.LessonApiService
@@ -147,5 +148,11 @@ object NetworkModule {
     @Provides
     fun provideMemberApiService(retrofit: Retrofit): MemberApiService {
         return retrofit.create(MemberApiService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideCommunicationApiService(retrofit: Retrofit): CommunicationApiService {
+        return retrofit.create(CommunicationApiService::class.java)
     }
 }

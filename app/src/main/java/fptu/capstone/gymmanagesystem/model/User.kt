@@ -11,7 +11,8 @@ data class User(
     @SerializedName("phone") var phone: String? = null,
     @SerializedName("avatarUrl") var avatarUrl: String? = null,
     @SerializedName("createAt") var createAt: String? = null,
-    @SerializedName("validDate") var validDate: String? = null
+    @SerializedName("validDate") var validDate: String? = null,
+    @SerializedName("role") var role: String? = null
 )
 
 data class SignUpRequest(

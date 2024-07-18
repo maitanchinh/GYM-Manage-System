@@ -49,11 +49,11 @@ import coil.request.ImageRequest
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshState
 import fptu.capstone.gymmanagesystem.R
-import fptu.capstone.gymmanagesystem.model.Classes
 import fptu.capstone.gymmanagesystem.model.Course
-import fptu.capstone.gymmanagesystem.model.Courses
 import fptu.capstone.gymmanagesystem.model.FilterRequestBody
+import fptu.capstone.gymmanagesystem.model.GClass
 import fptu.capstone.gymmanagesystem.model.Pagination
+import fptu.capstone.gymmanagesystem.model.Response
 import fptu.capstone.gymmanagesystem.ui.component.Gap
 import fptu.capstone.gymmanagesystem.ui.component.shimmerLoadingAnimation
 import fptu.capstone.gymmanagesystem.ui.schedule.components.InDay
@@ -70,18 +70,20 @@ fun ScheduleScreen(
     modifier: Modifier = Modifier,
     userViewModel: UserViewModel = hiltViewModel(),
     classViewModel: ClassViewModel = hiltViewModel(),
-    courseViewModel: CourseViewModel = hiltViewModel()
+    courseViewModel: CourseViewModel = hiltViewModel(),
+    onClassClick: (courseId: String, classId: String) -> Unit,
 ) {
     val notificationCount by remember { mutableStateOf(2) }
     val user = userViewModel.getUser()
     val classesState by classViewModel.classes.collectAsState()
     val coursesState by courseViewModel.courses.collectAsState()
     val lessons by classViewModel.lessons.collectAsState()
+    val classesInDateState by classViewModel.classInDate.collectAsState()
     var courses: ArrayList<Course> = arrayListOf()
     var expendedClass by remember { mutableStateOf<Int?>(null) }
     when (coursesState) {
         is DataState.Success -> {
-            courses = (coursesState as DataState.Success<Courses>).data.courses
+            courses = (coursesState as DataState.Success<Response<Course>>).data.data
         }
 
         else -> {}
@@ -187,7 +189,7 @@ fun ScheduleScreen(
                 }
 
             }
-            when (classesState) {
+            when (classesInDateState) {
                 is DataState.Loading -> {
                     item {
                         Box(
@@ -201,9 +203,15 @@ fun ScheduleScreen(
                 }
 
                 is DataState.Success -> {
-                    val classes = classesState as DataState.Success<Classes>
-                    items(classes.data.classes.size) { index ->
-                        val gClass = classes.data.classes[index].copy(lessons = lessons.lessons.filter { it.classId == classes.data.classes[index].id })
+                    val classes = (classesInDateState as DataState.Success<Response<GClass>>).data.data
+                    if (classes.isEmpty()) {
+                        item {
+                            Text(text = "You have no class today")
+                        }
+                    }
+                    else
+                    items(classes.size) { index ->
+                        val gClass = classes[index].copy(lessons = lessons.data.filter { it.classId == classes[index].id })
                         val myCourses = ArrayList<Course>()
                         courses.find { it.classes.find { cl -> cl.id == gClass.id } != null }
                             ?.copy(classes = arrayListOf(gClass))?.let { myCourses.add(it) }
@@ -257,7 +265,8 @@ fun ScheduleScreen(
                         }
 
                         is DataState.Success -> {
-                            val classes = (classesState as DataState.Success<Classes>).data.classes
+                            val classes = (classesState as DataState.Success<Response<GClass>>).data.data
+                            val duration = classes.sumOf { it.lessonCount!! }
                             Row {
                                 Box(
                                     modifier = Modifier
@@ -331,24 +340,13 @@ fun ScheduleScreen(
                                                     fontSize = 24.sp,
                                                     fontWeight = FontWeight.Medium
                                                 )
-                                            ) { append("10") }
+                                            ) { append(duration.toString()) }
                                             withStyle(
                                                 style = SpanStyle(
                                                     color = Color.Gray,
                                                 )
-                                            ) { append("h ") }
-                                            withStyle(
-                                                style = SpanStyle(
-                                                    color = Color.Black,
-                                                    fontSize = 24.sp,
-                                                    fontWeight = FontWeight.Medium
-                                                )
-                                            ) { append("30") }
-                                            withStyle(
-                                                style = SpanStyle(
-                                                    color = Color.Gray,
-                                                )
-                                            ) { append("m") }
+                                            ) { append(" lessons") }
+
                                         }, style = MaterialTheme.typography.bodyMedium)
                                     }
                                 }
@@ -395,19 +393,25 @@ fun ScheduleScreen(
                 }
 
                 is DataState.Success -> {
-                    val classes = classesState as DataState.Success<Classes>
+                    val classes = classesState as DataState.Success<Response<GClass>>
 
-                    items(classes.data.classes.size) { index ->
-                        val gClass = classes.data.classes[index]
-                        .copy(lessons = lessons.lessons.filter { it.classId == classes.data.classes[index].id })
+                    items(classes.data.data.size) { index ->
+                        val gClass = classes.data.data[index]
+                        .copy(lessons = lessons.data.filter { it.classId == classes.data.data[index].id })
                         val myCourse =
                             courses.find { it.classes.find { cl -> cl.id == gClass.id } != null }
                                 ?.copy(classes = arrayListOf(gClass))
                         if (myCourse != null) {
-                            MyClass(course = myCourse, isExpanded = expendedClass == index) {
-                                expendedClass = if (expendedClass == index) null else index
+                            MyClass(course = myCourse) {
+                                onClassClick(myCourse.id!!, gClass.id!!)
                             }
-                        } else Text(text = "You have no class")
+                        } else Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(70.dp)
+                                .clip(shape = RoundedCornerShape(20))
+                                .shimmerLoadingAnimation()
+                        )
                     }
 
                 }

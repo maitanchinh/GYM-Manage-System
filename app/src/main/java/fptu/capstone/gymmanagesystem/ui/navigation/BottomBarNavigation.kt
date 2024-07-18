@@ -11,6 +11,7 @@ import androidx.navigation.compose.composable
 import fptu.capstone.gymmanagesystem.ui.course.AllCourseScreen
 import fptu.capstone.gymmanagesystem.ui.course.CourseScreen
 import fptu.capstone.gymmanagesystem.ui.course.detail.CourseDetailScreen
+import fptu.capstone.gymmanagesystem.ui.gymClass.ClassDetailScreen
 import fptu.capstone.gymmanagesystem.ui.inquiry.InquiryDetailScreen
 import fptu.capstone.gymmanagesystem.ui.inquiry.InquiryScreen
 import fptu.capstone.gymmanagesystem.ui.login.LoginScreen
@@ -37,7 +38,11 @@ fun BottomBarNavigation(
         modifier = modifier,
         route = BOTTOM_BAR_ROUTE
     ) {
-        composable(BottomNavItem.Schedule.route) { ScheduleScreen() }
+        composable(BottomNavItem.Schedule.route) {
+            ScheduleScreen(onClassClick = { courseId, classId ->
+                navController.navigate(Route.ClassDetail.createRouteWithId(courseId, classId))
+            })
+        }
         composable(BottomNavItem.Profile.route) {
             if (isLoggedIn) {
                 ProfileScreen(onProfileDetailClick = { id ->
@@ -53,8 +58,14 @@ fun BottomBarNavigation(
         }
         composable(BottomNavItem.Course.route) {
             CourseScreen(
-                onViewAllMyClassClick = { navController.navigate(Route.AllClass.route) },
-                onCourseClick = { id -> navController.navigate(Route.CourseDetail.createRouteWithId(id)) })
+                onViewAllMyClassClick = { navController.navigate(Route.AllCourse.route) },
+                onCourseClick = { id ->
+                    navController.navigate(
+                        Route.CourseDetail.createRouteWithId(
+                            id
+                        )
+                    )
+                })
         }
         composable(Route.Signup.route) {
             SignupScreen(navController = navController)
@@ -63,7 +74,7 @@ fun BottomBarNavigation(
             val userId = backStackEntry.arguments?.getString("id")
             ProfileDetailScreen(userId = userId!!)
         }
-        composable(Route.AllClass.route) {
+        composable(Route.AllCourse.route) {
             AllCourseScreen(onCourseClick = { id ->
                 navController.navigate(
                     Route.CourseDetail.createRouteWithId(
@@ -82,6 +93,11 @@ fun BottomBarNavigation(
         composable(Route.InquiryDetail.route) { backStackEntry ->
             val inquiryId = backStackEntry.arguments?.getString("id")
             InquiryDetailScreen(id = inquiryId!!)
+        }
+        composable(Route.ClassDetail.route) { backStackEntry ->
+            val courseId = backStackEntry.arguments?.getString("courseId")
+            val classId = backStackEntry.arguments?.getString("classId")
+            ClassDetailScreen(courseId = courseId!!, classId = classId!!)
         }
     }
 }

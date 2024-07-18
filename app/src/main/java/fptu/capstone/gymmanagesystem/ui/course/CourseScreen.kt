@@ -35,8 +35,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshState
-import fptu.capstone.gymmanagesystem.model.Categories
+import fptu.capstone.gymmanagesystem.model.CourseCategory
 import fptu.capstone.gymmanagesystem.model.FilterRequestBody
+import fptu.capstone.gymmanagesystem.model.Response
 import fptu.capstone.gymmanagesystem.ui.component.IconTextField
 import fptu.capstone.gymmanagesystem.ui.component.shimmerLoadingAnimation
 import fptu.capstone.gymmanagesystem.utils.DataState
@@ -62,11 +63,11 @@ fun CourseScreen(
     var isClassesRefreshing by remember { mutableStateOf(false) }
 //    val swipeRefreshState by remember { mutableStateOf(SwipeRefreshState(isRefreshing = classes is DataState.Loading)) }
     if (categoryState is DataState.Success) {
-        categories.addAll((categoryState as DataState.Success<Categories>).data.categories.map { it.name!! })
+        categories.addAll((categoryState as DataState.Success<Response<CourseCategory>>).data.data.map { it.name!! })
         if (selectedCategory.value == "All") {
             viewModel.fetchCourses(FilterRequestBody())
         } else {
-            viewModel.fetchCourses(FilterRequestBody(categoryId = (categoryState as DataState.Success<Categories>).data.categories.find { it.name == selectedCategory.value }?.id))
+            viewModel.fetchCourses(FilterRequestBody(categoryId = (categoryState as DataState.Success<Response<CourseCategory>>).data.data.find { it.name == selectedCategory.value }?.id))
         }
     }
     SwipeRefresh(
@@ -197,7 +198,7 @@ fun CourseScreen(
                     }
 
                     is DataState.Success -> {
-                        val items = (courses as? DataState.Success)?.data?.courses ?: emptyList()
+                        val items = (courses as? DataState.Success)?.data?.data ?: emptyList()
                         items(items.size) { index ->
                             CourseCard(course = items[index], onCourseClick = onCourseClick)
                         }

@@ -19,12 +19,20 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TextField(label: String? = null, value: String? = null, visualTransformation: VisualTransformation = VisualTransformation.None, maxLines: Int = 1, onTextChange: (String) -> Unit) {
+fun TextField(
+    label: String? = null,
+    value: String? = null,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    maxLines: Int = 1,
+    suffix: @Composable (() -> Unit)? = null,
+    prefix: @Composable (() -> Unit)? = null,
+    onTextChange: (String) -> Unit
+) {
     OutlinedTextField(
         value = value!!,
         onValueChange = onTextChange,
 //        label = { Text(label!!) },
-        placeholder = { Text(label!!) },
+        placeholder = { label?.let { Text(it) } },
         modifier = Modifier
             .fillMaxWidth()
             .clip(shape = RoundedCornerShape(16.dp))
@@ -36,6 +44,8 @@ fun TextField(label: String? = null, value: String? = null, visualTransformation
         shape = RoundedCornerShape(16.dp),
         visualTransformation = visualTransformation,
         maxLines = maxLines,
-        minLines = maxLines
+        minLines = maxLines,
+        suffix = suffix,
+        prefix = prefix
     )
 }

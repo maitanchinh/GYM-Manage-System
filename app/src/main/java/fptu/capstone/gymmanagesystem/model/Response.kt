@@ -2,7 +2,7 @@ package fptu.capstone.gymmanagesystem.model
 
 import com.google.gson.annotations.SerializedName
 
-data class ClassMembers(
+data class Response<T>(
     @SerializedName("pagination" ) var pagination : Pagination?     = Pagination(),
-    @SerializedName("data"       ) var classMembers       : ArrayList<ClassMember> = arrayListOf()
+    @SerializedName("data"       ) var data       : ArrayList<T> = arrayListOf()
 )

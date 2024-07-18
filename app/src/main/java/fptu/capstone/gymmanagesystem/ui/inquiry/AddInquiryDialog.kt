@@ -13,9 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import fptu.capstone.gymmanagesystem.model.Inquiries
 import fptu.capstone.gymmanagesystem.model.Inquiry
 import fptu.capstone.gymmanagesystem.model.InquiryRequestBody
+import fptu.capstone.gymmanagesystem.model.Response
 import fptu.capstone.gymmanagesystem.ui.component.Gap
 import fptu.capstone.gymmanagesystem.ui.component.TextField
 import fptu.capstone.gymmanagesystem.utils.DataState
@@ -27,7 +27,7 @@ fun AddInquiryDialog(
     title: String,
     message: String,
     inquiryState: DataState<Inquiry>,
-    inquiriesState: DataState<Inquiries>,
+    inquiriesState: DataState<Response<Inquiry>>,
     context: Context,
     userId: String
 ) {

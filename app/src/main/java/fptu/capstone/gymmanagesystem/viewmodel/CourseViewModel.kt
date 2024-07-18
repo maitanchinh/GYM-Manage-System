@@ -4,8 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fptu.capstone.gymmanagesystem.model.Course
-import fptu.capstone.gymmanagesystem.model.Courses
 import fptu.capstone.gymmanagesystem.model.FilterRequestBody
+import fptu.capstone.gymmanagesystem.model.GClass
+import fptu.capstone.gymmanagesystem.model.Response
 import fptu.capstone.gymmanagesystem.repositories.CourseRepository
 import fptu.capstone.gymmanagesystem.utils.DataState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,8 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CourseViewModel @Inject constructor(private val courseRepository: CourseRepository) : ViewModel() {
-    private val _courses = MutableStateFlow<DataState<Courses>>(DataState.Idle)
-    val courses: StateFlow<DataState<Courses>> = _courses
+    private val _courses = MutableStateFlow<DataState<Response<Course>>>(DataState.Idle)
+    val courses: StateFlow<DataState<Response<Course>>> = _courses
     private val _course = MutableStateFlow<DataState<Course>>(DataState.Idle)
     val course: StateFlow<DataState<Course>> = _course
 

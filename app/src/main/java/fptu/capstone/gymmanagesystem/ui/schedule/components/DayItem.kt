@@ -1,6 +1,7 @@
 package fptu.capstone.gymmanagesystem.ui.schedule.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,7 @@ fun DayItem(day: String, dayOfWeek: String, isSelected: Boolean, onClick: () -> 
         modifier = Modifier
             .size(width = 52.dp, height = 60.dp)
             .clip(shape = RoundedCornerShape(8.dp))
+            .clickable { onClick() }
             .background(
                 color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
             ),

@@ -1,9 +1,9 @@
 package fptu.capstone.gymmanagesystem.network
 
 import fptu.capstone.gymmanagesystem.model.FilterRequestBody
-import fptu.capstone.gymmanagesystem.model.Inquiries
 import fptu.capstone.gymmanagesystem.model.Inquiry
 import fptu.capstone.gymmanagesystem.model.InquiryRequestBody
+import fptu.capstone.gymmanagesystem.model.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -12,7 +12,7 @@ import retrofit2.http.Path
 
 interface InquiryApiService {
     @POST("inqueries/filter")
-    suspend fun getInquiries(@Body filterRequestBody: FilterRequestBody) : Inquiries
+    suspend fun getInquiries(@Body filterRequestBody: FilterRequestBody) : Response<Inquiry>
 
     @GET("inqueries/{id}")
     suspend fun getInquiryDetail(@Path("id") id: String) : Inquiry

@@ -38,7 +38,7 @@ fun AllCourseScreen(viewModel: CourseViewModel = hiltViewModel(), onCourseClick:
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        val items = (classes.value as? DataState.Success)?.data?.courses ?: emptyList()
+        val items = (classes.value as? DataState.Success)?.data?.data ?: emptyList()
 //        val items = classes.value.classes
         item(span = { GridItemSpan(2) }) {
             Column {

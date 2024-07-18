@@ -5,6 +5,7 @@ sealed class Route(val route: String) {
     object Dashboard : Route("dashboard")
     object Profile : Route("profile")
     object Home : Route("home")
+    object Schedule : Route("schedule")
     object Signup : Route("signup")
     object ProfileDetail : Route("profileDetail/{id}"){
         fun createRouteWithId(id: String): String {
@@ -18,10 +19,10 @@ sealed class Route(val route: String) {
         }
     }
     object Class : Route("class")
-    object AllClass : Route("allClass")
-    object ClassDetail : Route("classDetail/{id}"){
-        fun createRouteWithId(id: String): String {
-            return "classDetail/$id"
+    object AllCourse : Route("allCourse")
+    object ClassDetail : Route("schedule/classDetail/{courseId}/{classId}"){
+        fun createRouteWithId(courseId: String, classId: String): String {
+            return "schedule/classDetail/$courseId/$classId"
         }
     }
     object Inquiry : Route("inquiry")
@@ -30,5 +31,5 @@ sealed class Route(val route: String) {
             return "inquiryDetail/$id"
         }
     }
-    object Schedule : Route("schedule")
+
 }

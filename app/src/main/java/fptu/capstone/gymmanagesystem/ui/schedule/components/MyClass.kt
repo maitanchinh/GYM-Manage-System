@@ -1,10 +1,5 @@
 package fptu.capstone.gymmanagesystem.ui.schedule.components
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -43,7 +38,6 @@ import java.time.format.DateTimeFormatter
 fun MyClass(
     modifier: Modifier = Modifier,
     course: Course,
-    isExpanded: Boolean = false,
     onClick: () -> Unit = {}
 ) {
     val lessons = course.classes.first().lessons
@@ -51,7 +45,7 @@ fun MyClass(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(shape = RoundedCornerShape(20))
+            .clip(shape = RoundedCornerShape(16.dp))
             .clickable { onClick() }
             .background(MaterialTheme.colorScheme.primaryContainer)
     ) {
@@ -109,7 +103,7 @@ fun MyClass(
                             val stroke = Stroke(width = 15f)
                             val startAngle = -90f
                             val sweepAngle: Float =
-                                (360 * lessonsCompleted.size.toFloat() / lessons.size.toFloat() * 100 / 100).toFloat()
+                                (360 * course.classes[0].lessonCount!!.toFloat() / course.classes[0].totalLesson!!.toFloat() * 100 / 100).toFloat()
 
                             // Draw background circle
                             drawCircle(
@@ -134,34 +128,34 @@ fun MyClass(
                         Text(
                             text = String.format(
                                 "%.0f%%",
-                                (lessonsCompleted.size.toFloat() / lessons.size.toFloat() * 100)
+                                (course.classes[0].lessonCount!!.toFloat() / course.classes[0].totalLesson!!.toFloat() * 100)
                             ),
                             fontSize = MaterialTheme.typography.labelSmall.fontSize,
                             fontWeight = FontWeight.Bold
                         )
                     }
             }
-            AnimatedVisibility(
-                visible = isExpanded,
-                enter = expandVertically() + fadeIn(),
-                exit = shrinkVertically() + fadeOut()
-            ) {
-                Column {
-                    Gap.k16.Height()
-                    Text(
-                        text = "Trainer: " + course.classes[0].trainer!!.name!!,
-                        style = MaterialTheme.typography.bodyLarge,
-//                        fontWeight = FontWeight.Medium
-                    )
-                    Gap.k8.Height()
-                    Text(text = "Status: " + course.classes[0].status!!, style = MaterialTheme.typography.bodyLarge)
-                    Gap.k8.Height()
-                    Text(
-                        text = "Participants: ${course.classes[0].participant}",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
-            }
+//            AnimatedVisibility(
+//                visible = isExpanded,
+//                enter = expandVertically() + fadeIn(),
+//                exit = shrinkVertically() + fadeOut()
+//            ) {
+//                Column {
+//                    Gap.k16.Height()
+//                    Text(
+//                        text = "Trainer: " + course.classes[0].trainer!!.name!!,
+//                        style = MaterialTheme.typography.bodyLarge,
+////                        fontWeight = FontWeight.Medium
+//                    )
+//                    Gap.k8.Height()
+//                    Text(text = "Status: " + course.classes[0].status!!, style = MaterialTheme.typography.bodyLarge)
+//                    Gap.k8.Height()
+//                    Text(
+//                        text = "Participants: ${course.classes[0].participant}",
+//                        style = MaterialTheme.typography.bodyLarge
+//                    )
+//                }
+//            }
         }
     }
 }

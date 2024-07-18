@@ -34,8 +34,7 @@ import java.time.LocalTime
 @Composable
 fun InDay(course: Course) {
     val lessons = course.classes.first().lessons
-    val upcomingLesson = lessons.firstOrNull { it.status == "Hasn't start" }
-    println("Completed: ${lessons.count { it.status == "Completed" }}")
+    val upcomingLesson = lessons[course.classes[0].lessonCount!!]
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -94,7 +93,7 @@ fun InDay(course: Course) {
                     )
                     Gap.k8.Height()
                     LinearProgressIndicator(
-                        progress = {if(lessons.isNotEmpty()) (lessons.count { it.status == "Completed" }.toFloat() / lessons.size) else 0f }, modifier = Modifier
+                        progress = {course.classes[0].lessonCount!!.toFloat() / course.classes[0].totalLesson!!.toFloat() }, modifier = Modifier
                             .fillMaxWidth()
                             .clip(shape = RoundedCornerShape(8.dp))
                     )
@@ -106,7 +105,7 @@ fun InDay(course: Course) {
                                     color = Color.Black,
                                     fontWeight = FontWeight.Medium
                                 )
-                            ) { append("${lessons.count { it.status == "Completed" }}/${lessons.size}") }
+                            ) { append("${course.classes[0].lessonCount}/${course.classes[0].totalLesson}") }
                             withStyle(
                                 style = SpanStyle(
                                     color = Color.Gray,
