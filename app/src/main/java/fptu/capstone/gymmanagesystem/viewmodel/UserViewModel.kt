@@ -6,7 +6,6 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import fptu.capstone.gymmanagesystem.model.SignUpRequest
 import fptu.capstone.gymmanagesystem.model.User
 import fptu.capstone.gymmanagesystem.repositories.UserRepository
 import fptu.capstone.gymmanagesystem.utils.DataState
@@ -73,11 +72,11 @@ class UserViewModel @Inject constructor(
         }
     }
 
-    fun signup(user: SignUpRequest) {
+    fun signup(email: String, password: String, name: String) {
         viewModelScope.launch {
             _userState.value = DataState.Loading
             try {
-                val response = userRepository.signUp(user)
+                val response = userRepository.signUp(email = email, password = password, name = name)
                 _userState.value = DataState.Success(response)
             } catch (e: Exception) {
                 e.printStackTrace()

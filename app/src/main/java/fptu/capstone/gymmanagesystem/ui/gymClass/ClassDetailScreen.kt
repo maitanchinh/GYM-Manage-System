@@ -170,7 +170,7 @@ fun ClassDetailScreen(
                         }
                     }
                 }
-                Gap.k32.Height()
+                Gap.k16.Height()
                 Box(
                     modifier = Modifier
                         .clip(shape = RoundedCornerShape(16.dp))

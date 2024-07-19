@@ -18,7 +18,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import fptu.capstone.gymmanagesystem.model.SignUpRequest
 import fptu.capstone.gymmanagesystem.ui.component.Gap
 import fptu.capstone.gymmanagesystem.ui.component.LargeButton
 import fptu.capstone.gymmanagesystem.ui.component.TextField
@@ -67,7 +66,7 @@ fun SignupScreen(
 //        TextField(label = "Address", value = "", onTextChange = {})
         Gap.k32.Height()
         LargeButton(text = "Sign Up", isLoading = userState.value is DataState.Loading, enabled = name.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty() && confirmPassword.isNotEmpty() && password == confirmPassword, onClick = {
-            userViewModel.signup(SignUpRequest(name = name, email = email, password = password))})
+            userViewModel.signup( email = email, password = password, name = name)})
         Gap.k16.Height()
         when(userState.value) {
             is DataState.Error -> {

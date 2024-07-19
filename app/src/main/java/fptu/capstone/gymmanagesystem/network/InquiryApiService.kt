@@ -11,15 +11,15 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface InquiryApiService {
-    @POST("inqueries/filter")
+    @POST("inquiries/filter")
     suspend fun getInquiries(@Body filterRequestBody: FilterRequestBody) : Response<Inquiry>
 
-    @GET("inqueries/{id}")
+    @GET("inquiries/{id}")
     suspend fun getInquiryDetail(@Path("id") id: String) : Inquiry
 
-    @POST("inqueries")
+    @POST("inquiries")
     suspend fun createInquiry(@Body inquiryRequestBody: InquiryRequestBody) : Inquiry
 
-    @DELETE("inqueries/{id}")
+    @DELETE("inquiries/{id}")
     suspend fun deleteInquiry(@Path("id") id: String) : Inquiry
 }

@@ -7,20 +7,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,7 +27,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -37,13 +35,28 @@ import coil.request.ImageRequest
 import fptu.capstone.gymmanagesystem.R
 import fptu.capstone.gymmanagesystem.model.Communication
 import fptu.capstone.gymmanagesystem.ui.component.Gap
+import kotlinx.coroutines.launch
 
 @Composable
-fun Communication(communication: Communication, onReply: (communication: Communication) -> Unit) {
+fun Communication(communication: Communication, onReply: () -> Unit, onUnReply: () -> Unit) {
     var offsetX by remember { mutableFloatStateOf(0f) }
     val animatedOffsetX by animateFloatAsState(targetValue = offsetX, label = "")
+    var hasReplied by remember { mutableStateOf(false) }
+
+    val coroutineScope = rememberCoroutineScope()
     Column(modifier = Modifier.pointerInput(Unit) {
         detectHorizontalDragGestures(onDragEnd = {
+            if (offsetX < -200f && !hasReplied) {
+                hasReplied = true
+                coroutineScope.launch {
+                    onReply()
+                }
+            } else if (offsetX > -200f && hasReplied) {
+                hasReplied = false
+                coroutineScope.launch {
+                    onUnReply()
+                }
+            }
             offsetX = if (offsetX < -200f) {
                 -200f
             } else {
@@ -51,25 +64,14 @@ fun Communication(communication: Communication, onReply: (communication: Communi
             }
         }) { change, dragAmount ->
             val newOffsetX = offsetX + dragAmount
-            if (newOffsetX in -300f..0f) {
+            if (newOffsetX in -400f..0f) {
                 offsetX = newOffsetX
                 change.consume()
+
             }
         }
     }) {
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize(),
-                contentAlignment = Alignment.CenterEnd
-            ) {
-                IconButton(onClick = { onReply(communication) }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.outline_mode_comment_24),
-                        contentDescription = "Reply",
-                    )
-                }
-            }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
@@ -77,7 +79,7 @@ fun Communication(communication: Communication, onReply: (communication: Communi
             ) {
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(communication.user?.avatarUrl)
+                        .data(communication.getUser()?.avatarUrl)
                         .placeholder(
                             R.drawable.avatar_placeholder
                         ).error(R.drawable.avatar_placeholder).build(),
@@ -96,7 +98,23 @@ fun Communication(communication: Communication, onReply: (communication: Communi
                         .background(color = MaterialTheme.colorScheme.secondaryContainer)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text(text = communication.user?.name ?: "", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        Text(text = communication.getUser()?.name ?: "", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        Gap.k8.Height()
+                        if (communication.imageUrl?.isNotEmpty() == true) {
+                            AsyncImage(
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .data(communication.imageUrl)
+                                    .placeholder(
+                                        R.drawable.placeholder
+                                    ).error(R.drawable.placeholder).build(),
+                                contentDescription = "Image",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(shape = RoundedCornerShape(16.dp))
+                            )
+                            Gap.k8.Height()
+                        }
                         Text(text = communication.message!!)
 
                     }

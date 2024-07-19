@@ -5,6 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -45,7 +46,7 @@ fun BottomNavigationBar(
                 ),
 //                modifier = Modifier.background(color = MaterialTheme.colorScheme.primary),
                 icon = { Icon(painterResource(id = item.icon), contentDescription = item.title) },
-//                label = { Text(item.title) },
+                label = { Text(item.title) },
                 selected = if (currentRoute?.startsWith(item.route) == true) true else navBackStackEntry?.destination?.parent?.route == item.route,
                 onClick = {
                     navController.navigate(item.route) {

@@ -1,5 +1,6 @@
 package fptu.capstone.gymmanagesystem.viewmodel
 
+import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,7 +24,8 @@ class CommunicationViewModel @Inject constructor(private val communicationReposi
     val communication: StateFlow<DataState<Response<Communication>>> = _communication
     private val _isCommenting = MutableStateFlow(false)
     val isCommenting: StateFlow<Boolean> = _isCommenting
-//    private val _isPosting = MutableStateFlow(false)
+
+    //    private val _isPosting = MutableStateFlow(false)
 //    val isPosting: StateFlow<Boolean> = _isPosting
     private val _comment = MutableStateFlow("")
     val comment: StateFlow<String> = _comment
@@ -37,6 +39,17 @@ class CommunicationViewModel @Inject constructor(private val communicationReposi
     val sendComment: StateFlow<DataState<Comment>> = _sendComment
     private val _sendCommunication = MutableStateFlow<DataState<Communication>>(DataState.Idle)
     val sendCommunication: StateFlow<DataState<Communication>> = _sendCommunication
+    private val _imageBitmap = MutableStateFlow<Bitmap?>(null)
+    val imageBitmap: StateFlow<Bitmap?> = _imageBitmap
+
+    init {
+        fetchCommunications(
+            FilterRequestBody(
+                orderBy = "CreateAt",
+                isAscending = false
+            )
+        )
+    }
 
     fun fetchCommunications(filterRequestBody: FilterRequestBody) {
         viewModelScope.launch {
@@ -67,6 +80,14 @@ class CommunicationViewModel @Inject constructor(private val communicationReposi
 
     fun setCommunicationContent(content: String) {
         _communicationContent.value = content
+    }
+
+    fun setCommunicationImage(image: File?) {
+        _communicationImage.value = image
+    }
+
+    fun setImageBitmap(bitmap: Bitmap?) {
+        _imageBitmap.value = bitmap
     }
 
     fun postCommunication(classId: String) {
@@ -112,6 +133,7 @@ class CommunicationViewModel @Inject constructor(private val communicationReposi
         _sendComment.value = DataState.Idle
         _sendCommunication.value = DataState.Idle
         _communicationContent.value = ""
+        _imageBitmap.value = null
         _communicationImage.value = null
     }
 }

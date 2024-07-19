@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import fptu.capstone.gymmanagesystem.model.Course
 import fptu.capstone.gymmanagesystem.model.FilterRequestBody
-import fptu.capstone.gymmanagesystem.model.GClass
 import fptu.capstone.gymmanagesystem.model.Response
 import fptu.capstone.gymmanagesystem.repositories.CourseRepository
 import fptu.capstone.gymmanagesystem.utils.DataState
@@ -34,7 +33,6 @@ class CourseViewModel @Inject constructor(private val courseRepository: CourseRe
             _courses.value = DataState.Loading
             try {
                 val response = courseRepository.getCourses(filterRequestBody)
-                println("Response: $response")
                 _courses.value = DataState.Success(response)
             } catch (e: Exception) {
                 e.printStackTrace()

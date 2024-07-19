@@ -23,9 +23,10 @@ interface CommunicationApiService {
     suspend fun postCommunication(
         @Path("classId") classId: String,
         @Part imageUrl: MultipartBody.Part?,
-        @Part("message") message: RequestBody?
+        @Part("message") message: RequestBody
     ): Communication
 
+    @RequiresAuth
     @POST("class-communication-comments/{communicationId}")
     suspend fun sendComment(
         @Path("communicationId") communicationId: String,
