@@ -8,6 +8,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import fptu.capstone.gymmanagesystem.network.AttendanceApiService
 import fptu.capstone.gymmanagesystem.network.AuthApiService
 import fptu.capstone.gymmanagesystem.network.CategoryApiService
 import fptu.capstone.gymmanagesystem.network.ClassApiService
@@ -154,5 +155,11 @@ object NetworkModule {
     @Provides
     fun provideCommunicationApiService(retrofit: Retrofit): CommunicationApiService {
         return retrofit.create(CommunicationApiService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideAttendanceApiService(retrofit: Retrofit): AttendanceApiService {
+        return retrofit.create(AttendanceApiService::class.java)
     }
 }

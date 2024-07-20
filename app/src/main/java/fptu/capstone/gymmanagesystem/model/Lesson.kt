@@ -8,5 +8,7 @@ data class Lesson(
     @SerializedName("startTime") var startTime: String? = null,
     @SerializedName("endTime") var endTime: String? = null,
     @SerializedName("classId") var classId: String? = null,
-    @SerializedName("status") var status: String? = null
+    @SerializedName("status") var status: String? = null,
+    var isAttendance: Boolean = false,
+    var isPast: Boolean = false
 )

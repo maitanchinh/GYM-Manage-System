@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class FilterRequestBody(
     @SerializedName("search") var search: String? = null,
+    @SerializedName("memberId") var memberId: String? = null,
     @SerializedName("classId") var classId: String? = null,
     @SerializedName("courseId") var courseId: String? = null,
     @SerializedName("status") var status: String? = null,

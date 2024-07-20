@@ -65,7 +65,7 @@ fun InDay(course: Course) {
                     )
                     Gap.k8.Height()
                     Text(
-                        text = if (upcomingLesson != null) "${upcomingLesson.name}" else "You have completed all lessons!",
+                        text = "${upcomingLesson.name}",
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Medium
                     )

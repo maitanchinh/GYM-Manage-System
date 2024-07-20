@@ -185,7 +185,7 @@ fun ClassDetailScreen(
                         if (classId == null)
                             tabs = listOf("Overview", "Instructor", "Reviews", "Requirements")
                         else
-                            tabs = listOf("Overview", "Communication", "Reviews", "Attendance")
+                            tabs = listOf("Overview", "Communication", "Feedback", "Attendance")
 
                         tabs.forEach { tab ->
                             Box(
@@ -236,12 +236,12 @@ fun ClassDetailScreen(
                             CommunicationContent(modifier = Modifier.fillMaxSize().weight(1f), classId = classId)
                         }
 
-                        "Reviews" -> {
-                            Text(text = "Reviews")
+                        "Feedback" -> {
+                            FeedbackContent()
                         }
 
                         "Attendance" -> {
-                            AttendanceContent()
+                            AttendanceContent(modifier = Modifier.fillMaxSize().weight(1f), classId = classId)
                         }
                     }
             }
