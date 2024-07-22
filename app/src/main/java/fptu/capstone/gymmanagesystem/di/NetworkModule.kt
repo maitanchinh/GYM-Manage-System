@@ -14,6 +14,7 @@ import fptu.capstone.gymmanagesystem.network.CategoryApiService
 import fptu.capstone.gymmanagesystem.network.ClassApiService
 import fptu.capstone.gymmanagesystem.network.CommunicationApiService
 import fptu.capstone.gymmanagesystem.network.CourseApiService
+import fptu.capstone.gymmanagesystem.network.FeedbackApiService
 import fptu.capstone.gymmanagesystem.network.InquiryApiService
 import fptu.capstone.gymmanagesystem.network.LessonApiService
 import fptu.capstone.gymmanagesystem.network.MemberApiService
@@ -161,5 +162,11 @@ object NetworkModule {
     @Provides
     fun provideAttendanceApiService(retrofit: Retrofit): AttendanceApiService {
         return retrofit.create(AttendanceApiService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideFeedbackApiService(retrofit: Retrofit): FeedbackApiService {
+        return retrofit.create(FeedbackApiService::class.java)
     }
 }

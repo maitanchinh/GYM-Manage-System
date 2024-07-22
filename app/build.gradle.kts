@@ -53,6 +53,7 @@ kapt {
 }
 
 dependencies {
+    implementation("com.google.zxing:core:3.5.3")
     implementation ("com.google.accompanist:accompanist-permissions:0.30.0")
     runtimeOnly("com.google.accompanist:accompanist-swiperefresh:0.34.0")
     implementation("com.google.accompanist:accompanist-swiperefresh:0.34.0")
