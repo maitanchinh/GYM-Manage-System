@@ -1,7 +1,5 @@
 package fptu.capstone.gymmanagesystem.ui.course.detail
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -30,7 +28,6 @@ import fptu.capstone.gymmanagesystem.ui.component.Gap
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun OverviewContent(course: Course) {
     var isExpanded by remember { mutableStateOf(false) }

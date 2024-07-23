@@ -109,7 +109,6 @@ class ClassViewModel @Inject constructor(
             try {
                 val response: Response<GClass> = classRepository.getClassesEnrolled(filterRequestBody)
                 _classInDate.value = DataState.Success(response)
-                println("Response: $response")
             } catch (e: Exception) {
                 e.printStackTrace()
                 println("Error at fetchClassesInDate: ${e.message}")

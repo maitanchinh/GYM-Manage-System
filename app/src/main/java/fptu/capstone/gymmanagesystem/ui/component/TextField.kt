@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -35,7 +36,8 @@ fun TextField(
     maxLines: Int = 1,
     suffix: @Composable (() -> Unit)? = null,
     prefix: @Composable (() -> Unit)? = null,
-    onTextChange: (String) -> Unit
+    onTextChange: (String) -> Unit,
+    keyboardOption: KeyboardOptions = KeyboardOptions.Default
 ) {
     var isPasswordVisible by remember { mutableStateOf(false) }
 
@@ -48,6 +50,7 @@ fun TextField(
     OutlinedTextField(
         value = value!!,
         onValueChange = onTextChange,
+        keyboardOptions = keyboardOption,
 //        label = { Text(label!!) },
         placeholder = { label?.let { Text(it) } },
         modifier = Modifier

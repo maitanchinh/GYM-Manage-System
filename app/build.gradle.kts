@@ -12,7 +12,7 @@ android {
     defaultConfig {
         applicationId = "fptu.capstone.gymmanagesystem"
         minSdk = 26
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -55,6 +55,7 @@ kapt {
 dependencies {
     implementation("com.google.zxing:core:3.5.3")
     implementation ("com.google.accompanist:accompanist-permissions:0.30.0")
+    implementation("androidx.compose.material3:material3-android:1.2.1")
     runtimeOnly("com.google.accompanist:accompanist-swiperefresh:0.34.0")
     implementation("com.google.accompanist:accompanist-swiperefresh:0.34.0")
 
@@ -70,8 +71,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.11.0")
 
     implementation ("com.google.accompanist:accompanist-flowlayout:0.25.1")
-    implementation("com.google.dagger:hilt-android:2.51.1")
-    kapt("com.google.dagger:hilt-android-compiler:2.51.1")
+
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     //Image loading
     implementation("io.coil-kt:coil-compose:2.6.0")
@@ -83,11 +83,10 @@ dependencies {
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.3")
     implementation("androidx.activity:activity-compose:1.9.0")
-    implementation(platform("androidx.compose:compose-bom:2024.06.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
+//    implementation("androidx.compose.material3:material3")
     implementation("androidx.lifecycle:lifecycle-viewmodel-android:2.8.3")
     implementation("androidx.compose.runtime:runtime-android:1.6.8")
     implementation("androidx.compose.ui:ui-android:1.6.8")

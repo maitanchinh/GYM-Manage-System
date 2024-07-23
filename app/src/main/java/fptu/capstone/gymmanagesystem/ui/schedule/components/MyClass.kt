@@ -41,7 +41,6 @@ fun MyClass(
     onClick: () -> Unit = {}
 ) {
     val lessons = course.classes.first().lessons
-    val lessonsCompleted = lessons.filter { it.status == "Completed" }
     Box(
         modifier = Modifier
             .fillMaxWidth()

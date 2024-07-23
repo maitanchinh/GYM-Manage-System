@@ -237,7 +237,7 @@ fun ClassDetailScreen(
                         }
 
                         "Feedback" -> {
-                            FeedbackContent()
+                            FeedbackContent(modifier = Modifier.fillMaxSize().weight(1f), classId = classId)
                         }
 
                         "Attendance" -> {
