@@ -1,5 +1,6 @@
 package fptu.capstone.gymmanagesystem.ui.course.detail
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,10 +15,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -38,16 +41,62 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import fptu.capstone.gymmanagesystem.R
+import fptu.capstone.gymmanagesystem.model.FilterRequestBody
 import fptu.capstone.gymmanagesystem.ui.component.Gap
+import fptu.capstone.gymmanagesystem.ui.component.LargeButton
+import fptu.capstone.gymmanagesystem.ui.navigation.Route
 import fptu.capstone.gymmanagesystem.utils.DataState
+import fptu.capstone.gymmanagesystem.viewmodel.ClassViewModel
 import fptu.capstone.gymmanagesystem.viewmodel.CourseViewModel
+import fptu.capstone.gymmanagesystem.viewmodel.UserViewModel
 
 @Composable
-fun CourseDetailScreen(courseId: String, viewModel: CourseViewModel = hiltViewModel()) {
+fun CourseDetailScreen(
+    courseId: String,
+    onEnrollClick: (route: String) -> Unit,
+    viewModel: CourseViewModel = hiltViewModel(),
+    userViewModel: UserViewModel = hiltViewModel(),
+    classViewModel: ClassViewModel = hiltViewModel()
+) {
+    val context = LocalContext.current
     var selectedTab by remember { mutableStateOf("Overview") }
     val courseState = viewModel.course.collectAsState()
+    val classesState by classViewModel.classes.collectAsState()
+    val wishlistState by viewModel.wishlist.collectAsState()
+    val wishlistsState by viewModel.wishlists.collectAsState()
+    var isShowConfirmDialog by remember {
+        mutableStateOf(false)
+    }
     LaunchedEffect(Unit) {
         viewModel.getCourseById(courseId)
+        viewModel.fetchWishlists(
+            FilterRequestBody(
+                memberId = userViewModel.getUser()?.id,
+                courseId = courseId
+            )
+        )
+        classViewModel.fetchClassesEnrolled(FilterRequestBody(courseId = courseId))
+    }
+
+    LaunchedEffect(wishlistState) {
+        if (wishlistState is DataState.Success) {
+            val wishlist = (wishlistState as DataState.Success).data
+            Toast.makeText(
+                context,
+                "You add course ${wishlist.course?.name} to wishlist",
+                Toast.LENGTH_SHORT
+            ).show()
+            viewModel.getCourseById(courseId)
+            viewModel.fetchWishlists(
+                FilterRequestBody(
+                    memberId = userViewModel.getUser()?.id,
+                    courseId = courseId
+                )
+            )
+        } else if (wishlistState is DataState.Error) {
+            val message = (wishlistState as DataState.Error).message
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
     }
     when (courseState.value) {
         is DataState.Success -> {
@@ -74,7 +123,8 @@ fun CourseDetailScreen(courseId: String, viewModel: CourseViewModel = hiltViewMo
                             .padding(8.dp),
                     ) {
                         AsyncImage(
-                            model = ImageRequest.Builder(LocalContext.current).data(course.thumbnailUrl)
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data(course.thumbnailUrl)
                                 .placeholder(
                                     R.drawable.placeholder
                                 ).error(R.drawable.placeholder).build(),
@@ -97,7 +147,11 @@ fun CourseDetailScreen(courseId: String, viewModel: CourseViewModel = hiltViewMo
                                 fontWeight = FontWeight.Medium
                             )
 
-                            Text(text = "Ratings", color = Color.Gray, fontWeight = FontWeight.Medium)
+                            Text(
+                                text = "Ratings",
+                                color = Color.Gray,
+                                fontWeight = FontWeight.Medium
+                            )
                         }
                         Gap.k4.Height()
                         Row(
@@ -105,9 +159,11 @@ fun CourseDetailScreen(courseId: String, viewModel: CourseViewModel = hiltViewMo
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
+                                modifier = Modifier.fillMaxWidth(0.9f),
                                 text = course.name ?: "No name",
                                 style = MaterialTheme.typography.headlineSmall,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
+                                maxLines = 2,
                             )
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
@@ -136,7 +192,7 @@ fun CourseDetailScreen(courseId: String, viewModel: CourseViewModel = hiltViewMo
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = Color.Gray,
                             )
-                            Gap.k32.Width()
+                            Gap.k16.Width()
                             Icon(
                                 painter = painterResource(id = R.drawable.round_access_time_24),
                                 contentDescription = null,
@@ -151,7 +207,57 @@ fun CourseDetailScreen(courseId: String, viewModel: CourseViewModel = hiltViewMo
                         }
                     }
                 }
-                Gap.k32.Height()
+                when (wishlistsState) {
+                    is DataState.Success -> {
+                        val courses = (wishlistsState as DataState.Success).data.data
+                        if (classesState is DataState.Success) {
+                            val classes = (classesState as DataState.Success).data.data
+                            println("Classes: $classes")
+                            if (classes.isNotEmpty()){
+                                Column(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Gap.k16.Height()
+                                    Text(
+                                        text = "Your are already enrolled in this course",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = Color.Gray
+                                    )
+                                }
+                            } else {
+                                if (courses.isEmpty())
+                                    Column {
+                                        Gap.k16.Height()
+                                        LargeButton(text = "Add to wishlist", isLoading = false) {
+                                            if (userViewModel.getUser() != null) {
+                                                isShowConfirmDialog = true
+                                            } else {
+                                                onEnrollClick(Route.Profile.route)
+                                            }
+                                        }
+                                    }
+                                else
+                                    Column(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Gap.k16.Height()
+                                        Text(
+                                            text = "This course is in your wishlist",
+                                            style = MaterialTheme.typography.titleMedium,
+                                            color = Color.Gray
+                                        )
+                                    }
+                            }
+                        }
+
+                    }
+
+                    else -> {}
+                }
+
+                Gap.k16.Height()
                 Box(
                     modifier = Modifier
                         .clip(shape = RoundedCornerShape(20))
@@ -190,27 +296,62 @@ fun CourseDetailScreen(courseId: String, viewModel: CourseViewModel = hiltViewMo
                     "Overview" -> {
                         OverviewContent(course = course)
                     }
+
                     "Instructor" -> {
                         Text(text = "Instructor")
                     }
+
                     "Reviews" -> {
                         Text(text = "Reviews")
                     }
+
                     "Requirements" -> {
                         Text(text = "Requirements")
                     }
                 }
             }
         }
+
         is DataState.Error -> {
             Text(text = "Error")
         }
+
         is DataState.Loading -> {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator(modifier = Modifier.size(50.dp))
             }
         }
+
         else -> {}
     }
-
+    if (isShowConfirmDialog) {
+        AlertDialog(
+            onDismissRequest = { isShowConfirmDialog = false },
+            title = {
+                Text(text = "Enroll course")
+            },
+            text = {
+                Text(text = "Are you sure you want to enroll this course?")
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.addWishlist(courseId)
+                        isShowConfirmDialog = false
+                    }
+                ) {
+                    Text(text = "Yes")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        isShowConfirmDialog = false
+                    }
+                ) {
+                    Text(text = "No")
+                }
+            }
+        )
+    }
 }

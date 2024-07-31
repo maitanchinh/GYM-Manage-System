@@ -85,7 +85,9 @@ fun BottomBarNavigation(
         }
         composable(Route.CourseDetail.route) { backStackEntry ->
             val courseId = backStackEntry.arguments?.getString("id")
-            CourseDetailScreen(courseId = courseId!!)
+            CourseDetailScreen(courseId = courseId!!, onEnrollClick = { route ->
+                navController.navigate(route)
+            })
         }
         composable(Route.Inquiry.route) {
             InquiryScreen(navController = navController)

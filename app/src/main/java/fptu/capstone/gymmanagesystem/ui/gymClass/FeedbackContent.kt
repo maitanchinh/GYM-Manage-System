@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -34,7 +33,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -94,7 +92,8 @@ fun FeedbackContent(
             )
             Toast.makeText(context, "Feedback successfully", Toast.LENGTH_SHORT).show()
         } else if (feedback is DataState.Error) {
-            Toast.makeText(context, (feedback as DataState.Error).message, Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, (feedback as DataState.Error).message, Toast.LENGTH_SHORT)
+                .show()
         }
     }
 
@@ -296,10 +295,13 @@ fun FeedbackContent(
 
     if (isShowDialog) {
         AlertDialog(
-            onDismissRequest = { feedbackViewModel.setShowFeedbackDialog() },
+            onDismissRequest = {
+                feedbackViewModel.setShowFeedbackDialog()
+                feedbackViewModel.setFeedbackScore(0)
+            },
             confirmButton = {
                 TextButton(onClick = {
-                    if (feedbackScore in 1..100 && feedbackMessage.isNotBlank()){
+                    if (feedbackScore in 1..5) {
                         feedbackViewModel.setShowFeedbackDialog()
                         feedbackViewModel.sendFeedback(
                             feedback = FeedbackRequestBody(
@@ -310,11 +312,14 @@ fun FeedbackContent(
                         )
                     }
                 }) {
-                    Text(text = "Send")
+                    Text(text = "Send", color = if (feedbackScore in 1..5) MaterialTheme.colorScheme.onPrimaryContainer else Color.Gray)
                 }
             },
             dismissButton = {
-                TextButton(onClick = { feedbackViewModel.setShowFeedbackDialog() }) {
+                TextButton(onClick = {
+                    feedbackViewModel.setShowFeedbackDialog()
+                    feedbackViewModel.setFeedbackScore(0)
+                }) {
                     Text(text = "Cancel", color = MaterialTheme.colorScheme.onSecondaryContainer)
                 }
             },
@@ -328,18 +333,21 @@ fun FeedbackContent(
                             feedbackViewModel.setFeedbackMessage(it)
                         }
                     )
-                    Gap.k8.Height()
-                    TextField(
-                        label = "Score (0-100)",
-                        value = feedbackScore.toString(),
-                        keyboardOption = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        onTextChange = {
-                            feedbackViewModel.setFeedbackScore(it.toInt())
+                    Gap.k16.Height()
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        for (i in 1..5) {
+                            Icon(
+                                modifier = Modifier.clickable {
+                                    feedbackViewModel.setFeedbackScore(i)
+                                },
+                                painter = painterResource(id = R.drawable.round_star_rate_32),
+                                contentDescription = null,
+                                tint = if (i <= feedbackScore) MaterialTheme.colorScheme.onSurface else Color.Gray
+                            )
                         }
-                    )
-                    Gap.k8.Height()
-                    if (feedbackScore == 0 || feedbackScore > 100 || feedbackMessage.isBlank()) {
-                        Text(text = "Score must be between 1 and 100 and message must not be empty")
                     }
                 }
             })

@@ -19,7 +19,7 @@ sealed class Route(val route: String) {
         }
     }
     object Class : Route("class")
-    object AllCourse : Route("allCourse")
+    object AllCourse : Route("course/allCourse")
     object ClassDetail : Route("schedule/classDetail/{courseId}/{classId}"){
         fun createRouteWithId(courseId: String, classId: String): String {
             return "schedule/classDetail/$courseId/$classId"

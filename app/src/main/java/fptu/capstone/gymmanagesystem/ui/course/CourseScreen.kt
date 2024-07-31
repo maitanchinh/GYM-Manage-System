@@ -35,6 +35,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshState
+import fptu.capstone.gymmanagesystem.model.Course
 import fptu.capstone.gymmanagesystem.model.CourseCategory
 import fptu.capstone.gymmanagesystem.model.FilterRequestBody
 import fptu.capstone.gymmanagesystem.model.Response
@@ -42,7 +43,9 @@ import fptu.capstone.gymmanagesystem.ui.component.IconTextField
 import fptu.capstone.gymmanagesystem.ui.component.shimmerLoadingAnimation
 import fptu.capstone.gymmanagesystem.utils.DataState
 import fptu.capstone.gymmanagesystem.viewmodel.CategoryViewModel
+import fptu.capstone.gymmanagesystem.viewmodel.ClassViewModel
 import fptu.capstone.gymmanagesystem.viewmodel.CourseViewModel
+import fptu.capstone.gymmanagesystem.viewmodel.UserViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,10 +55,15 @@ fun CourseScreen(
     onCourseClick: (id: String) -> Unit = {},
     onViewAllMyClassClick: () -> Unit = {},
     viewModel: CourseViewModel = hiltViewModel(),
-    categoryViewModel: CategoryViewModel = hiltViewModel()
+    categoryViewModel: CategoryViewModel = hiltViewModel(),
+    userViewModel: UserViewModel = hiltViewModel(),
+    classViewModel: ClassViewModel = hiltViewModel()
 ) {
     val categoryState by categoryViewModel.categories.collectAsState()
     val courses by viewModel.courses.collectAsState()
+    val myCourses = viewModel.myCourses
+    val classesState by classViewModel.classes.collectAsState()
+    val wishlistsState by viewModel.wishlists.collectAsState()
     var searchText by remember { mutableStateOf("") }
     val notificationCount by remember { mutableStateOf(2) }
     var categories = arrayListOf("All")
@@ -65,17 +73,23 @@ fun CourseScreen(
     if (categoryState is DataState.Success) {
         categories.addAll((categoryState as DataState.Success<Response<CourseCategory>>).data.data.map { it.name!! })
         if (selectedCategory.value == "All") {
-            viewModel.fetchCourses(FilterRequestBody())
+            viewModel.fetchWishlists(FilterRequestBody(memberId = userViewModel.getUser()?.id))
+            classViewModel.fetchClassesEnrolled(FilterRequestBody())
         } else {
             viewModel.fetchCourses(FilterRequestBody(categoryId = (categoryState as DataState.Success<Response<CourseCategory>>).data.data.find { it.name == selectedCategory.value }?.id))
+            classViewModel.fetchClassesEnrolled(FilterRequestBody())
         }
     }
+    var filteredItems by remember { mutableStateOf<List<Course>?>(null) }
+
     SwipeRefresh(
         state = SwipeRefreshState(isRefreshing = isClassesRefreshing),
-//        state = swipeRefreshState,
+        //        state = swipeRefreshState,
         onRefresh = {
             isClassesRefreshing = true
             viewModel.refreshCourses(FilterRequestBody())
+            viewModel.fetchWishlists(FilterRequestBody(memberId = userViewModel.getUser()?.id))
+            classViewModel.fetchClassesEnrolled(FilterRequestBody())
             isClassesRefreshing = false
         }
     ) {
@@ -84,58 +98,9 @@ fun CourseScreen(
                 .fillMaxSize()
                 .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
         ) {
-//            Row {
-//                Image(
-//                    painter = rememberAsyncImagePainter(model = "https://avatar.iran.liara.run/public/48"),
-//                    contentDescription = "My Class",
-//                    modifier = Modifier
-//                        .size(40.dp)
-//                        .clipToBounds()
-//                )
-//                Gap.k16.Width()
-//                Column(
-//                    verticalArrangement = Arrangement.SpaceBetween,
-//                    modifier = Modifier.weight(1f)
-//                ) {
-//                    Text(
-//                        text = "Hello",
-//                        style = MaterialTheme.typography.bodySmall,
-//                        fontWeight = MaterialTheme.typography.bodySmall.fontWeight,
-//                    )
-//                    //                Gap.k8.Height()
-//                    Text(
-//                        text = "Nguyễn Văn An",
-//                        style = MaterialTheme.typography.bodyLarge,
-//                        fontWeight = FontWeight.Bold,
-//                    )
-//                }
-//                Box(modifier = Modifier.size(40.dp)) {
-//                    IconButton(onClick = { /*TODO*/ }) {
-//                        BadgedBox(badge = {
-//                            if (notificationCount > 0) {
-//                                Badge(
-//                                    containerColor = MaterialTheme.colorScheme.error,
-//                                    contentColor = Color.White,
-//                                    modifier = Modifier.offset(x = (-10).dp, y = 10.dp)
-//                                ) {
-//                                    Text(text = notificationCount.toString())
-//                                }
-//                            }
-//                        }) {
-//                            Icon(
-//                                painter = painterResource(id = R.drawable.round_notifications_32),
-//                                contentDescription = "Notification",
-//                                tint = Color(0xFFED9455)
-//                            )
-//                        }
-//                    }
-//                }
-//            }
-//            Gap.k16.Height()
-
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
@@ -174,7 +139,10 @@ fun CourseScreen(
                                         .padding(horizontal = 16.dp, vertical = 8.dp)
                                         .clickable { selectedCategory.value = it }
                                 ) {
-                                    Text(text = it, color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface)
+                                    Text(
+                                        text = it,
+                                        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                    )
                                 }
                             }
                         }
@@ -183,14 +151,20 @@ fun CourseScreen(
                 when (courses) {
                     is DataState.Loading -> {
                         item(span = { GridItemSpan(1) }) {
-                            Box(modifier = Modifier.fillMaxWidth().height(170.dp).clip(shape = RoundedCornerShape(5)).shimmerLoadingAnimation())
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(185.dp)
+                                    .clip(shape = RoundedCornerShape(5))
+                                    .shimmerLoadingAnimation()
+                            )
                         }
                     }
 
                     is DataState.Error -> {
                         item {
                             Text(
-                                text = "Error loading courses",
+                                text = "Error loading courses, please try refreshing",
                                 color = MaterialTheme.colorScheme.error,
                                 modifier = Modifier.fillMaxSize()
                             )
@@ -198,9 +172,56 @@ fun CourseScreen(
                     }
 
                     is DataState.Success -> {
-                        val items = (courses as? DataState.Success)?.data?.data ?: emptyList()
-                        items(items.size) { index ->
-                            CourseCard(course = items[index], onCourseClick = onCourseClick)
+                        val items =
+                            (courses as? DataState.Success)?.data?.data ?: mutableListOf()
+                        var coursesWithClass = mutableListOf<Course>()
+
+                        if (wishlistsState is DataState.Success) {
+                            for (i in items) {
+                                classViewModel.fetchClassesEnrolled(
+                                    FilterRequestBody(
+                                        courseId = i.id
+                                    )
+                                )
+                                if (classesState is DataState.Success) {
+                                    val classes =
+                                        (classesState as DataState.Success).data.data
+                                    val classIds = classes.map { it.id }
+                                    coursesWithClass = items.filter { item ->
+                                        item.classes.any { it.id in classIds }
+                                    }.toMutableList()
+
+
+                                }
+                            }
+                            if (coursesWithClass.isNotEmpty()) {
+                                for (course in coursesWithClass) {
+                                    viewModel.addMyCourse(course)
+                                    items.removeAll { item -> item.id == course.id }
+                                }
+                            }
+                            val wishlists = (wishlistsState as DataState.Success).data.data
+                            val courseWishlistIds = wishlists.map { it.course?.id }
+                            items.removeAll { item -> item.id in courseWishlistIds }
+                            filteredItems = items
+                        }
+                        filteredItems?.let { i ->
+                            items(i.size) { index ->
+                                CourseCard(
+                                    course = items[index],
+                                    onCourseClick = onCourseClick
+                                )
+                            }
+                        } ?: run {
+                            item {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(185.dp)
+                                        .clip(shape = RoundedCornerShape(5))
+                                        .shimmerLoadingAnimation()
+                                )
+                            }
                         }
                     }
 
@@ -217,11 +238,55 @@ fun CourseScreen(
                     else -> {
                     }
                 }
-//                val items = classes.classes
-//                        items(items.size) { index ->
-//                            ClassCard(gymClass = items[index], onClassClick = onClassClick)
-//                        }
+                when (wishlistsState) {
+                    is DataState.Error -> {
+                        item {
+                            Text(text = "Error loading wishlists, please try refreshing")
+                        }
+                    }
+
+                    is DataState.Success -> {
+                        val items =
+                            (wishlistsState as? DataState.Success)?.data?.data ?: emptyList()
+                        if (items.isNotEmpty()) {
+                            item(span = { GridItemSpan(2) }) {
+                                Text(
+                                    text = "My Wishlist",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                            items(items.size) { index ->
+                                CourseCard(
+                                    course = items[index].course!!,
+                                    onCourseClick = onCourseClick
+                                )
+                            }
+
+                        }
+                    }
+
+                    else -> {}
+                }
+                if (myCourses.isNotEmpty()) {
+                    item(span = { GridItemSpan(2) }) {
+                        Text(
+                            text = "My Class",
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    items(myCourses.size) { index ->
+                        CourseCard(
+                            course = myCourses[index],
+                            onCourseClick = onCourseClick
+                        )
+                    }
+
+                }
             }
+
+
         }
     }
 }

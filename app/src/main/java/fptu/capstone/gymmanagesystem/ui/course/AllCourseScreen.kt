@@ -15,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -22,14 +23,28 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.flowlayout.FlowRow
+import fptu.capstone.gymmanagesystem.model.CourseCategory
+import fptu.capstone.gymmanagesystem.model.FilterRequestBody
+import fptu.capstone.gymmanagesystem.model.Response
 import fptu.capstone.gymmanagesystem.utils.DataState
+import fptu.capstone.gymmanagesystem.viewmodel.CategoryViewModel
 import fptu.capstone.gymmanagesystem.viewmodel.CourseViewModel
 
 @Composable
-fun AllCourseScreen(viewModel: CourseViewModel = hiltViewModel(), onCourseClick: (id: String) -> Unit = {}) {
+fun AllCourseScreen(viewModel: CourseViewModel = hiltViewModel(), categoryViewModel: CategoryViewModel = hiltViewModel(), onCourseClick: (id: String) -> Unit = {}) {
     val classes = viewModel.courses.collectAsState()
     val category = listOf("All", "Cardio", "Strength", "Yoga", "Dance", "Boxing", "Pilates")
     val selectedCategory = remember { mutableStateOf("All") }
+    val categoryState by categoryViewModel.categories.collectAsState()
+    var categories = arrayListOf("All")
+    if (categoryState is DataState.Success) {
+        categories.addAll((categoryState as DataState.Success<Response<CourseCategory>>).data.data.map { it.name!! })
+        if (selectedCategory.value == "All") {
+            viewModel.fetchCourses(FilterRequestBody())
+        } else {
+            viewModel.fetchCourses(FilterRequestBody(categoryId = (categoryState as DataState.Success<Response<CourseCategory>>).data.data.find { it.name == selectedCategory.value }?.id))
+        }
+    }
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier
@@ -43,8 +58,8 @@ fun AllCourseScreen(viewModel: CourseViewModel = hiltViewModel(), onCourseClick:
         item(span = { GridItemSpan(2) }) {
             Column {
                 FlowRow(mainAxisSpacing = 16.dp, crossAxisSpacing = 8.dp) {
-                    category.forEach {
-                        val isSelected = it == selectedCategory.value
+                    categories.forEach {
+                        val isSelected = selectedCategory.value == it
                         val backgroundColor =
                             if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer
                         Box(
@@ -54,7 +69,7 @@ fun AllCourseScreen(viewModel: CourseViewModel = hiltViewModel(), onCourseClick:
                                 .padding(horizontal = 16.dp, vertical = 8.dp)
                                 .clickable { selectedCategory.value = it }
                         ) {
-                            Text(text = it)
+                            Text(text = it, color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface)
                         }
                     }
                 }
