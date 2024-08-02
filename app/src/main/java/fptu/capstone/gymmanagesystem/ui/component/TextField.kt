@@ -30,6 +30,7 @@ import fptu.capstone.gymmanagesystem.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TextField(
+    modifier: Modifier = Modifier,
     label: String? = null,
     value: String? = null,
     visualTransformation: VisualTransformation = VisualTransformation.None,
@@ -37,7 +38,10 @@ fun TextField(
     suffix: @Composable (() -> Unit)? = null,
     prefix: @Composable (() -> Unit)? = null,
     onTextChange: (String) -> Unit,
-    keyboardOption: KeyboardOptions = KeyboardOptions.Default
+    keyboardOption: KeyboardOptions = KeyboardOptions.Default,
+    readOnly: Boolean = false,
+    trailingIcon: @Composable (() -> Unit)? = null,
+    enabled: Boolean = true
 ) {
     var isPasswordVisible by remember { mutableStateOf(false) }
 
@@ -48,12 +52,13 @@ fun TextField(
     }
 
     OutlinedTextField(
-        value = value!!,
+        enabled = enabled,
+        value = value ?: "",
         onValueChange = onTextChange,
         keyboardOptions = keyboardOption,
 //        label = { Text(label!!) },
         placeholder = { label?.let { Text(it) } },
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(shape = RoundedCornerShape(16.dp))
             .background(Color.White),
@@ -67,6 +72,7 @@ fun TextField(
         } else {
             visualTransformation
         },
+        readOnly = readOnly,
         maxLines = maxLines,
         minLines = maxLines,
         suffix = {
@@ -89,6 +95,7 @@ fun TextField(
             }
             suffix?.invoke()
         },
-        prefix = prefix
+        prefix = prefix,
+        trailingIcon = trailingIcon
     )
 }

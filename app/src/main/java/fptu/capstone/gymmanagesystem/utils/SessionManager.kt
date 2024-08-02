@@ -19,6 +19,12 @@ class SessionManager @Inject constructor(@ApplicationContext context: Context) {
         }
     }
 
+    fun saveUser(user: User) {
+        sharedPreferences.edit() {
+            putString("USER_KEY", gson.toJson(user)).apply()
+        }
+    }
+
     fun getToken(): String? {
         return sharedPreferences.getString("TOKEN_KEY", null)
     }

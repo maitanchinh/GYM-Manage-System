@@ -53,6 +53,7 @@ kapt {
 }
 
 dependencies {
+    implementation ("com.google.android.material:material:1.12.0")
     implementation("com.google.zxing:core:3.5.3")
     implementation ("com.google.accompanist:accompanist-permissions:0.30.0")
     implementation("androidx.compose.material3:material3-android:1.2.1")
