@@ -12,3 +12,4 @@ val Pink40 = Color(0xFF7D5260)
 
 val ForestGreen = Color(0xFF228B22)
 val GoldYellow = Color(0xFFFFDF00)
+val Amber = Color(0xFFFFBF00)

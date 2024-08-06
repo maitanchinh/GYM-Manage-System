@@ -46,6 +46,7 @@ class CourseViewModel @Inject constructor(private val courseRepository: CourseRe
             try {
                 val response = courseRepository.getCourses(filterRequestBody)
                 _courses.value = DataState.Success(response)
+                println("Courses: ${response.data}")
             } catch (e: Exception) {
                 e.printStackTrace()
                 println("Error at fetchCourses: ${e.message}")

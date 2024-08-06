@@ -73,11 +73,16 @@ fun CourseScreen(
     if (categoryState is DataState.Success) {
         categories.addAll((categoryState as DataState.Success<Response<CourseCategory>>).data.data.map { it.name!! })
         if (selectedCategory.value == "All") {
-            viewModel.fetchWishlists(FilterRequestBody(memberId = userViewModel.getUser()?.id))
-            classViewModel.fetchClassesEnrolled(FilterRequestBody())
+            if (userViewModel.getUser() != null) {
+                viewModel.fetchWishlists(FilterRequestBody(memberId = userViewModel.getUser()?.id))
+                classViewModel.fetchClassesEnrolled(FilterRequestBody())
+            }
         } else {
             viewModel.fetchCourses(FilterRequestBody(categoryId = (categoryState as DataState.Success<Response<CourseCategory>>).data.data.find { it.name == selectedCategory.value }?.id))
-            classViewModel.fetchClassesEnrolled(FilterRequestBody())
+            if (userViewModel.getUser() != null) {
+                viewModel.fetchWishlists(FilterRequestBody(memberId = userViewModel.getUser()?.id))
+                classViewModel.fetchClassesEnrolled(FilterRequestBody())
+            }
         }
     }
     var filteredItems by remember { mutableStateOf<List<Course>?>(null) }
@@ -88,8 +93,10 @@ fun CourseScreen(
         onRefresh = {
             isClassesRefreshing = true
             viewModel.refreshCourses(FilterRequestBody())
-            viewModel.fetchWishlists(FilterRequestBody(memberId = userViewModel.getUser()?.id))
-            classViewModel.fetchClassesEnrolled(FilterRequestBody())
+            if (userViewModel.getUser() != null){
+                viewModel.fetchWishlists(FilterRequestBody(memberId = userViewModel.getUser()?.id))
+                classViewModel.fetchClassesEnrolled(FilterRequestBody())
+            }
             isClassesRefreshing = false
         }
     ) {
@@ -176,33 +183,38 @@ fun CourseScreen(
                             (courses as? DataState.Success)?.data?.data ?: mutableListOf()
                         var coursesWithClass = mutableListOf<Course>()
 
-                        if (wishlistsState is DataState.Success) {
-                            for (i in items) {
-                                classViewModel.fetchClassesEnrolled(
-                                    FilterRequestBody(
-                                        courseId = i.id
+                        if (userViewModel.getUser() != null) {
+
+                            if (wishlistsState is DataState.Success) {
+                                for (i in items) {
+                                    classViewModel.fetchClassesEnrolled(
+                                        FilterRequestBody(
+                                            courseId = i.id
+                                        )
                                     )
-                                )
-                                if (classesState is DataState.Success) {
-                                    val classes =
-                                        (classesState as DataState.Success).data.data
-                                    val classIds = classes.map { it.id }
-                                    coursesWithClass = items.filter { item ->
-                                        item.classes.any { it.id in classIds }
-                                    }.toMutableList()
+                                    if (classesState is DataState.Success) {
+                                        val classes =
+                                            (classesState as DataState.Success).data.data
+                                        val classIds = classes.map { it.id }
+                                        coursesWithClass = items.filter { item ->
+                                            item.classes.any { it.id in classIds }
+                                        }.toMutableList()
 
 
+                                    }
                                 }
-                            }
-                            if (coursesWithClass.isNotEmpty()) {
-                                for (course in coursesWithClass) {
-                                    viewModel.addMyCourse(course)
-                                    items.removeAll { item -> item.id == course.id }
+                                if (coursesWithClass.isNotEmpty()) {
+                                    for (course in coursesWithClass) {
+                                        viewModel.addMyCourse(course)
+                                        items.removeAll { item -> item.id == course.id }
+                                    }
                                 }
+                                val wishlists = (wishlistsState as DataState.Success).data.data
+                                val courseWishlistIds = wishlists.map { it.course?.id }
+                                items.removeAll { item -> item.id in courseWishlistIds }
+                                filteredItems = items
                             }
-                            val wishlists = (wishlistsState as DataState.Success).data.data
-                            val courseWishlistIds = wishlists.map { it.course?.id }
-                            items.removeAll { item -> item.id in courseWishlistIds }
+                        } else {
                             filteredItems = items
                         }
                         filteredItems?.let { i ->
@@ -238,51 +250,54 @@ fun CourseScreen(
                     else -> {
                     }
                 }
-                when (wishlistsState) {
-                    is DataState.Error -> {
-                        item {
-                            Text(text = "Error loading wishlists, please try refreshing")
-                        }
-                    }
+                if (userViewModel.getUser() != null) {
 
-                    is DataState.Success -> {
-                        val items =
-                            (wishlistsState as? DataState.Success)?.data?.data ?: emptyList()
-                        if (items.isNotEmpty()) {
-                            item(span = { GridItemSpan(2) }) {
-                                Text(
-                                    text = "My Wishlist",
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    fontWeight = FontWeight.Bold
-                                )
+                    when (wishlistsState) {
+                        is DataState.Error -> {
+                            item {
+                                Text(text = "Error loading wishlists, please try refreshing")
                             }
-                            items(items.size) { index ->
-                                CourseCard(
-                                    course = items[index].course!!,
-                                    onCourseClick = onCourseClick
-                                )
-                            }
-
                         }
-                    }
 
-                    else -> {}
-                }
-                if (myCourses.isNotEmpty()) {
-                    item(span = { GridItemSpan(2) }) {
-                        Text(
-                            text = "My Class",
-                            style = MaterialTheme.typography.bodyLarge,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                    items(myCourses.size) { index ->
-                        CourseCard(
-                            course = myCourses[index],
-                            onCourseClick = onCourseClick
-                        )
-                    }
+                        is DataState.Success -> {
+                            val items =
+                                (wishlistsState as? DataState.Success)?.data?.data ?: emptyList()
+                            if (items.isNotEmpty()) {
+                                item(span = { GridItemSpan(2) }) {
+                                    Text(
+                                        text = "My Wishlist",
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                                items(items.size) { index ->
+                                    CourseCard(
+                                        course = items[index].course!!,
+                                        onCourseClick = onCourseClick
+                                    )
+                                }
 
+                            }
+                        }
+
+                        else -> {}
+                    }
+                    if (myCourses.isNotEmpty()) {
+                        item(span = { GridItemSpan(2) }) {
+                            Text(
+                                text = "My Class",
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        items(myCourses.size) { index ->
+                            CourseCard(
+                                course = myCourses[index],
+                                onCourseClick = onCourseClick
+                            )
+                        }
+
+                    }
                 }
             }
 

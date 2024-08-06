@@ -1,5 +1,9 @@
 package fptu.capstone.gymmanagesystem.ui.profile
 
+import android.content.Intent
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +22,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -48,36 +53,72 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import fptu.capstone.gymmanagesystem.R
 import fptu.capstone.gymmanagesystem.ui.component.Gap
 import fptu.capstone.gymmanagesystem.ui.component.LargeButton
+import fptu.capstone.gymmanagesystem.ui.theme.Amber
 import fptu.capstone.gymmanagesystem.ui.theme.GoldYellow
+import fptu.capstone.gymmanagesystem.utils.DataState
+import fptu.capstone.gymmanagesystem.viewmodel.MemberViewModel
 import fptu.capstone.gymmanagesystem.viewmodel.UserViewModel
 
 @Composable
 fun ProfileScreen(
     modifier: Modifier = Modifier,
     userViewModel: UserViewModel = hiltViewModel(),
+    memberViewModel: MemberViewModel = hiltViewModel(),
     onProfileDetailClick: (id: String) -> Unit,
     isLoading: Boolean,
-    onLogoutClick: () -> Unit
+    onLogoutClick: () -> Unit,
 ) {
+    val context = LocalContext.current
     val userState by userViewModel.userState.collectAsState()
+    val urlPaymentState by memberViewModel.urlPayment.collectAsState()
+    val paymentState by memberViewModel.paymentState.collectAsState()
     val isDarkMode by userViewModel.darkMode.observeAsState(initial = false)
     var user by remember { mutableStateOf(userViewModel.getUser()) }
     var isRefreshing by remember { mutableStateOf(false) }
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isRefreshing)
-
-    LaunchedEffect(userState) {
+    var isShowDialog by remember { mutableStateOf(false) }
+    val paymentLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        userViewModel.getUserById(user?.id!!)
         user = userViewModel.getUser()
+        if (user?.rank == "Basic") {
+            memberViewModel.setPaymentState(false)
+        } else {
+            memberViewModel.setPaymentState(true)
+        }
+    }
+    LaunchedEffect(userState) {
+        userViewModel.getUserById(user?.id!!)
+        user = userViewModel.getUser()
+        if (user?.rank == "Basic") {
+            memberViewModel.setPaymentState(false)
+        } else {
+            memberViewModel.setPaymentState(true)
+        }
+    }
+
+    LaunchedEffect(urlPaymentState) {
+        if (urlPaymentState is DataState.Success) {
+            val url = (urlPaymentState as DataState.Success).data
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url.values.first()))
+            paymentLauncher.launch(intent)
+        }
     }
     SwipeRefresh(state = swipeRefreshState, onRefresh = {
         isRefreshing = true
         userViewModel.getUserById(user?.id!!)
+        if (user?.rank == "Basic") {
+            memberViewModel.setPaymentState(false)
+        } else {
+            memberViewModel.setPaymentState(true)
+        }
         isRefreshing = false
     }) {
         Column(
             modifier = modifier
                 .fillMaxSize()
                 .padding(16.dp)
-                .verticalScroll(state = rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally
+                .verticalScroll(state = rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -128,15 +169,19 @@ fun ProfileScreen(
                     Text(
                         modifier = Modifier.padding(vertical = 4.dp, horizontal = 16.dp),
                         text = user?.rank.toString(),
-                        color = if (user?.rank == "Basic") MaterialTheme.colorScheme.primary else GoldYellow,
+                        color = if (user?.rank == "Basic") MaterialTheme.colorScheme.primary else Amber,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
                 }
             }
             Gap.k32.Height()
-            LargeButton(text = "Upgrade account", isLoading = false) {
-
+            LargeButton(
+                isAlter = paymentState,
+                text = if (paymentState) "Your account is upgraded" else "Upgrade account",
+                isLoading = urlPaymentState is DataState.Loading
+            ) {
+                isShowDialog = true
             }
             Gap.k32.Height()
             Box(
@@ -213,6 +258,30 @@ fun ProfileScreen(
                     Text("Log out")
                 }
             } else CircularProgressIndicator()
+        }
+        if (isShowDialog) {
+            AlertDialog(onDismissRequest = { isShowDialog = false },
+                title = {
+                    Text("Upgrade account")
+                },
+                text = {
+                    Text("Are you sure you want to upgrade your account?")
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            memberViewModel.buyPackage(packageId = "528CB291-4472-4B78-AB0F-691E5A3194E3")
+                            isShowDialog = false
+                        }
+                    ) {
+                        Text("Yes")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { isShowDialog = false }) {
+                        Text("No")
+                    }
+                })
         }
     }
 }

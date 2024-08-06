@@ -23,7 +23,7 @@ import javax.inject.Inject
 class UserViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val sessionManager: SessionManager,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
 ) : ViewModel() {
     private val _userState = MutableStateFlow<DataState<User>>(DataState.Idle)
     val userState: StateFlow<DataState<User>> = _userState
