@@ -48,6 +48,7 @@ import fptu.capstone.gymmanagesystem.ui.navigation.Route
 import fptu.capstone.gymmanagesystem.utils.DataState
 import fptu.capstone.gymmanagesystem.viewmodel.ClassViewModel
 import fptu.capstone.gymmanagesystem.viewmodel.CourseViewModel
+import fptu.capstone.gymmanagesystem.viewmodel.FeedbackViewModel
 import fptu.capstone.gymmanagesystem.viewmodel.UserViewModel
 
 @Composable
@@ -56,7 +57,8 @@ fun CourseDetailScreen(
     onEnrollClick: (route: String) -> Unit,
     viewModel: CourseViewModel = hiltViewModel(),
     userViewModel: UserViewModel = hiltViewModel(),
-    classViewModel: ClassViewModel = hiltViewModel()
+    classViewModel: ClassViewModel = hiltViewModel(),
+    feedbackViewModel: FeedbackViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     var selectedTab by remember { mutableStateOf("Overview") }
@@ -64,6 +66,7 @@ fun CourseDetailScreen(
     val classesState by classViewModel.classes.collectAsState()
     val wishlistState by viewModel.wishlist.collectAsState()
     val wishlistsState by viewModel.wishlists.collectAsState()
+    val feedbackState by feedbackViewModel.feedbacks.collectAsState()
     var isShowConfirmDialog by remember {
         mutableStateOf(false)
     }
@@ -76,6 +79,7 @@ fun CourseDetailScreen(
             )
         )
         classViewModel.fetchClassesEnrolled(FilterRequestBody(courseId = courseId))
+        feedbackViewModel.getFeedbacks(FilterRequestBody(courseId = courseId))
     }
 
     LaunchedEffect(wishlistState) {
@@ -167,7 +171,13 @@ fun CourseDetailScreen(
                             )
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
-                                    text = "4.5",
+                                    text = if (feedbackState is DataState.Success) {
+                                        val feedbacks = (feedbackState as DataState.Success).data.data
+                                        val score = feedbacks.map { it.score!! }.average()
+                                        String.format("%.1f", score)
+                                    } else {
+                                        "0.0"
+                                    },
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                                 Gap.k4.Width()
@@ -302,7 +312,7 @@ fun CourseDetailScreen(
                     }
 
                     "Reviews" -> {
-                        Text(text = "Reviews")
+                        ReviewContent(courseId = courseId, modifier = Modifier.fillMaxWidth().weight(1f))
                     }
 
                     "Requirements" -> {

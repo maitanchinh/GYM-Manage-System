@@ -41,19 +41,23 @@ import fptu.capstone.gymmanagesystem.R
 import fptu.capstone.gymmanagesystem.model.FilterRequestBody
 import fptu.capstone.gymmanagesystem.ui.component.Gap
 import fptu.capstone.gymmanagesystem.ui.course.detail.OverviewContent
+import fptu.capstone.gymmanagesystem.ui.course.detail.ReviewContent
 import fptu.capstone.gymmanagesystem.utils.DataState
 import fptu.capstone.gymmanagesystem.viewmodel.ClassViewModel
 import fptu.capstone.gymmanagesystem.viewmodel.CourseViewModel
+import fptu.capstone.gymmanagesystem.viewmodel.FeedbackViewModel
 
 @Composable
 fun ClassDetailScreen(
     courseId: String,
     classId: String? = null,
     courseViewModel: CourseViewModel = hiltViewModel(),
-    classViewModel: ClassViewModel = hiltViewModel()
+    classViewModel: ClassViewModel = hiltViewModel(),
+    feedbackViewModel: FeedbackViewModel = hiltViewModel()
 ) {
     var selectedTab by remember { mutableStateOf("Overview") }
     val courseState by courseViewModel.course.collectAsState()
+    val feedbackState by feedbackViewModel.feedbacks.collectAsState()
     var tabs = emptyList<String>()
     LaunchedEffect(Unit) {
         courseViewModel.getCourseById(courseId)
@@ -61,7 +65,7 @@ fun ClassDetailScreen(
 
             classViewModel.fetchClassesEnrolled(FilterRequestBody(courseId = courseId))
         }
-
+        feedbackViewModel.getFeedbacks(FilterRequestBody(courseId = courseId))
     }
     when (courseState) {
         is DataState.Success -> {
@@ -130,7 +134,13 @@ fun ClassDetailScreen(
                             )
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
-                                    text = "4.5",
+                                    text = if (feedbackState is DataState.Success) {
+                                        val feedbacks = (feedbackState as DataState.Success).data.data
+                                        val score = feedbacks.map { it.score!! }.average()
+                                        String.format("%.1f", score)
+                                    } else {
+                                        "0.0"
+                                    },
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                                 Gap.k4.Width()
@@ -219,7 +229,7 @@ fun ClassDetailScreen(
                         }
 
                         "Reviews" -> {
-                            Text(text = "Reviews")
+                            ReviewContent(courseId = courseId, modifier = Modifier.fillMaxSize().weight(1f))
                         }
 
                         "Requirements" -> {
@@ -233,15 +243,21 @@ fun ClassDetailScreen(
                         }
 
                         "Communication" -> {
-                            CommunicationContent(modifier = Modifier.fillMaxSize().weight(1f), classId = classId)
+                            CommunicationContent(modifier = Modifier
+                                .fillMaxSize()
+                                .weight(1f), classId = classId)
                         }
 
                         "Feedback" -> {
-                            FeedbackContent(modifier = Modifier.fillMaxSize().weight(1f), classId = classId)
+                            FeedbackContent(modifier = Modifier
+                                .fillMaxSize()
+                                .weight(1f), classId = classId)
                         }
 
                         "Attendance" -> {
-                            AttendanceContent(modifier = Modifier.fillMaxSize().weight(1f), classId = classId)
+                            AttendanceContent(modifier = Modifier
+                                .fillMaxSize()
+                                .weight(1f), classId = classId)
                         }
                     }
             }

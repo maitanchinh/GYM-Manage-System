@@ -144,7 +144,13 @@ fun FeedbackContent(
             }) {
             when (feedbacksState) {
                 is DataState.Loading -> {
-                    Text(text = "Loading")
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(150.dp)
+                            .clip(shape = RoundedCornerShape(8.dp))
+                            .shimmerLoadingAnimation()
+                    )
                 }
 
                 is DataState.Success -> {
@@ -195,7 +201,13 @@ fun FeedbackContent(
                     }
                     when (feedbacksState) {
                         is DataState.Loading -> {
-                            Text(text = "Loading")
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(48.dp)
+                                    .clip(shape = RoundedCornerShape(8.dp))
+                                    .shimmerLoadingAnimation()
+                            )
                         }
 
                         is DataState.Success -> {

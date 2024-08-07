@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicText
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,17 +18,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import fptu.capstone.gymmanagesystem.R
 import fptu.capstone.gymmanagesystem.model.Feedback
 import fptu.capstone.gymmanagesystem.ui.component.Gap
-import fptu.capstone.gymmanagesystem.ui.theme.ForestGreen
-import fptu.capstone.gymmanagesystem.ui.theme.GoldYellow
+import fptu.capstone.gymmanagesystem.ui.theme.Amber
 
 @Composable
 fun FeedbackItem(
@@ -66,19 +64,15 @@ fun FeedbackItem(
                         style = MaterialTheme.typography.titleMedium
                     )
                 }
-                BasicText(text = buildAnnotatedString {
-                    withStyle(style = MaterialTheme.typography.titleMedium.toSpanStyle()) {
-                        append("Score: ")
-                    }
-                    withStyle(
-                        style = SpanStyle(
-                            fontSize = MaterialTheme.typography.titleLarge.fontSize,
-                            color = if (feedback.score!! in 70..100) ForestGreen else if (feedback.score!! in 40..69) GoldYellow else MaterialTheme.colorScheme.error
-                        ),
-                    ) {
-                        append("${feedback.score}")
-                    }
-                }, style = MaterialTheme.typography.titleMedium)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = feedback.score.toString(),
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Gap.k4.Width()
+                    Icon(painter = painterResource(id = R.drawable.round_star_rate_24), contentDescription = null, tint = Amber)
+                }
             }
             Gap.k8.Height()
             Text(
