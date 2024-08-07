@@ -61,7 +61,6 @@ fun ReviewContent(
                 if (feedbacks.isEmpty())
                     Text(text = "No feedback yet")
                 else{
-                    println("Feedbacks: $feedbacks")
                 LazyColumn() {
                     items(feedbacks.size) { index ->
                         FeedbackItem(feedbacks[index])

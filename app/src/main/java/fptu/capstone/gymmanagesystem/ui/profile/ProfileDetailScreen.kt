@@ -252,7 +252,7 @@ fun ProfileDetailScreen(
                     ) {
                         Text(
                             modifier = Modifier.padding(16.dp),
-                            text = gender,
+                            text = gender.ifEmpty { "Gender" },
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         DropdownMenu(
@@ -292,7 +292,7 @@ fun ProfileDetailScreen(
                     ) {
                         Text(
                             modifier = Modifier.padding(16.dp),
-                            text = parseDateTime(dateOfBirth).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                            text = if (dateOfBirth.isNotEmpty()) parseDateTime(dateOfBirth).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) else "Date of birth",
                             color = MaterialTheme.colorScheme.onSurface
                         )
 
@@ -321,6 +321,11 @@ fun ProfileDetailScreen(
         }
 
         else -> {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .padding(300.dp)
+                    .fillMaxSize()
+            )
         }
     }
     if (showSelectImageDialog) {

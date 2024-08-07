@@ -10,7 +10,7 @@ data class User(
     @SerializedName("status") var status: String? = null,
     @SerializedName("phone") var phone: String? = null,
     @SerializedName("gender") var gender: String? = null,
-    @SerializedName("rank") var rank: String? = null,
+    @SerializedName("rank") var rank: String? = "Basic",
     @SerializedName("avatarUrl") var avatarUrl: String? = null,
     @SerializedName("createAt") var createAt: String? = null,
     @SerializedName("dateOfBirth") var dateOfBirth: String? = null,

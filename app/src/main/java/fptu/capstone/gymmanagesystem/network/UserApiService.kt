@@ -19,7 +19,7 @@ interface UserApiService {
     suspend fun signUp(
         @Part("email") email: RequestBody,
         @Part("password") password: RequestBody,
-        @Part("name") name: RequestBody
+        @Part("name") name: RequestBody,
     ): User
 
     @Multipart

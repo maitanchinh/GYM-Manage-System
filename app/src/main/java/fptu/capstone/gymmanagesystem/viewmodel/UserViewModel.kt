@@ -10,6 +10,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import fptu.capstone.gymmanagesystem.model.User
 import fptu.capstone.gymmanagesystem.repositories.UserRepository
 import fptu.capstone.gymmanagesystem.utils.DataState
+import fptu.capstone.gymmanagesystem.utils.Message
 import fptu.capstone.gymmanagesystem.utils.SessionManager
 import fptu.capstone.gymmanagesystem.utils.SettingDataStore
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -128,9 +129,9 @@ class UserViewModel @Inject constructor(
                 val response =
                     userRepository.signUp(email = email, password = password, name = name)
                 _userState.value = DataState.Success(response)
-            } catch (e: Exception) {
+            } catch (e: HttpException) {
                 e.printStackTrace()
-                _userState.value = DataState.Error(e.message ?: "Unknown error")
+                _userState.value = DataState.Error(if (e.code() == 409) Message.EMAIL_EXISTED.message else "Unknown error")
             }
         }
     }
