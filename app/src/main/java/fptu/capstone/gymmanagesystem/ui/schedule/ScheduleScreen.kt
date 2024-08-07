@@ -394,7 +394,11 @@ fun ScheduleScreen(
 
                 is DataState.Success -> {
                     val classes = classesState as DataState.Success<Response<GClass>>
-
+                    if (classes.data.data.isEmpty()) {
+                        item {
+                            Text(text = "You have no class")
+                        }
+                    }
                     items(classes.data.data.size) { index ->
                         val gClass = classes.data.data[index]
                         .copy(lessons = lessons.data.filter { it.classId == classes.data.data[index].id })

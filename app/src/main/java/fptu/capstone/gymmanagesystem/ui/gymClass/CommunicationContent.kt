@@ -6,6 +6,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -86,7 +87,12 @@ fun CommunicationContent(
     val bitmap by communicationViewModel.imageBitmap.collectAsState()
 
     val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
-    val galleryPermissionState = rememberPermissionState(Manifest.permission.READ_EXTERNAL_STORAGE)
+    val galleryPermissionState = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        rememberPermissionState(permission = Manifest.permission.READ_MEDIA_IMAGES)
+    } else {
+        rememberPermissionState(permission = Manifest.permission.READ_EXTERNAL_STORAGE)
+    }
+
 
     val launcherTakePhoto =
         rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) {
@@ -291,6 +297,22 @@ fun CommunicationContent(
             }
 
             if (showSelectImageDialog) {
+                var takePhotoPending by remember { mutableStateOf(false) }
+                var pickImagePending by remember { mutableStateOf(false) }
+
+                if (takePhotoPending && cameraPermissionState.status.isGranted) {
+                    LaunchedEffect(Unit) {
+                        takePhotoPending = false
+                        launcherTakePhoto.launch()
+                    }
+                }
+
+                if (pickImagePending && galleryPermissionState.status.isGranted) {
+                    LaunchedEffect(Unit) {
+                        pickImagePending = false
+                        launcherPickImage.launch("image/*")
+                    }
+                }
                 AlertDialog(
                     onDismissRequest = { showSelectImageDialog = false },
                     confirmButton = { /*TODO*/ },
@@ -309,8 +331,8 @@ fun CommunicationContent(
                                         if (cameraPermissionState.status.isGranted)
                                             launcherTakePhoto.launch()
                                         else {
+                                            takePhotoPending = true
                                             cameraPermissionState.launchPermissionRequest()
-                                            launcherTakePhoto.launch()
                                         }
                                     }),
                                 contentAlignment = Alignment.Center
@@ -336,8 +358,8 @@ fun CommunicationContent(
                                         if (galleryPermissionState.status.isGranted)
                                             launcherPickImage.launch("image/*")
                                         else {
+                                            pickImagePending = true
                                             galleryPermissionState.launchPermissionRequest()
-                                            launcherPickImage.launch("image/*")
                                         }
                                     }),
                                 contentAlignment = Alignment.Center

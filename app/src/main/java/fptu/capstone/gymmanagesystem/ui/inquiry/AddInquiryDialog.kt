@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import fptu.capstone.gymmanagesystem.model.FilterRequestBody
 import fptu.capstone.gymmanagesystem.model.Inquiry
 import fptu.capstone.gymmanagesystem.model.InquiryRequestBody
 import fptu.capstone.gymmanagesystem.model.Response
@@ -75,7 +76,7 @@ fun AddInquiryDialog(
                         inquiryViewModel.setTitle("")
                         inquiryViewModel.setMessage("")
                         inquiryViewModel.resetInquiry()
-                        inquiryViewModel.refreshInquiries()
+                        inquiryViewModel.refreshInquiries(FilterRequestBody(memberId = userId))
                         LaunchedEffect(Unit) {
                             Toast.makeText(
                                 context,

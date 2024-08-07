@@ -30,12 +30,9 @@ class InquiryViewModel @Inject constructor(private val inquiryRepository: Inquir
     private val _message = MutableStateFlow("")
     val message: StateFlow<String> = _message
 
-    init {
-        fetchInquiries(FilterRequestBody())
-    }
 
-    fun refreshInquiries() {
-        fetchInquiries(FilterRequestBody())
+    fun refreshInquiries(filterRequestBody: FilterRequestBody) {
+        fetchInquiries(filterRequestBody)
     }
 
     fun resetInquiries() {
@@ -46,7 +43,7 @@ class InquiryViewModel @Inject constructor(private val inquiryRepository: Inquir
         _inquiry.value = DataState.Idle
     }
 
-    private fun fetchInquiries(filterRequestBody: FilterRequestBody) {
+    fun fetchInquiries(filterRequestBody: FilterRequestBody) {
         viewModelScope.launch {
             _inquiries.value = DataState.Loading
             try {

@@ -17,10 +17,12 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -31,6 +33,7 @@ import androidx.navigation.NavHostController
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshState
 import fptu.capstone.gymmanagesystem.R
+import fptu.capstone.gymmanagesystem.model.FilterRequestBody
 import fptu.capstone.gymmanagesystem.utils.DataState
 import fptu.capstone.gymmanagesystem.viewmodel.InquiryViewModel
 import fptu.capstone.gymmanagesystem.viewmodel.UserViewModel
@@ -47,11 +50,16 @@ fun InquiryScreen(
     val inquiriesState by inquiryViewModel.inquiries.collectAsState()
     val inquiryState by inquiryViewModel.inquiry.collectAsState()
     val deleteState by inquiryViewModel.deleteState.collectAsState()
-    val swipeRefreshState by remember { mutableStateOf(SwipeRefreshState(isRefreshing = inquiriesState is DataState.Idle)) }
+    var isRefreshing by remember { mutableStateOf(false) }
+    val swipeRefreshState by remember { mutableStateOf(SwipeRefreshState(isRefreshing = isRefreshing)) }
     val showAddInquiryDialog by inquiryViewModel.showAddInquiryDialog.collectAsState()
     val title by inquiryViewModel.title.collectAsState()
     val message by inquiryViewModel.message.collectAsState()
     val userId = userViewModel.getUser()?.id!!
+    LaunchedEffect(Unit) {
+        inquiryViewModel.fetchInquiries(FilterRequestBody(memberId = userViewModel.getUser()!!.id))
+        println("Member ID: ${userViewModel.getUser()!!.id}")
+    }
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
@@ -68,7 +76,7 @@ fun InquiryScreen(
         content = { paddingValues ->
             SwipeRefresh(
                 state = swipeRefreshState,
-                onRefresh = { inquiryViewModel.refreshInquiries() },
+                onRefresh = { inquiryViewModel.refreshInquiries(FilterRequestBody(memberId = userViewModel.getUser()!!.id)) },
             ) {
                 when (inquiriesState) {
                     is DataState.Loading -> {
@@ -92,7 +100,7 @@ fun InquiryScreen(
                             ) {
                                 Text(text = "No inquiries found")
                             }
-                            return@SwipeRefresh
+
                         }
                         LazyColumn(modifier = Modifier.fillMaxSize()) {
                             items(inquiries.size, key = { inquiries[it].id!! }) { index ->
