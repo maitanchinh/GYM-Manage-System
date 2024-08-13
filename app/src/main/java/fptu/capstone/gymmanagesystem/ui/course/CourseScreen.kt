@@ -21,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.flowlayout.FlowRow
@@ -73,6 +75,7 @@ fun CourseScreen(
     if (categoryState is DataState.Success) {
         categories.addAll((categoryState as DataState.Success<Response<CourseCategory>>).data.data.map { it.name!! })
         if (selectedCategory.value == "All") {
+            viewModel.fetchCourses(FilterRequestBody())
             if (userViewModel.getUser() != null) {
                 viewModel.fetchWishlists(FilterRequestBody(memberId = userViewModel.getUser()?.id))
                 classViewModel.fetchClassesEnrolled(FilterRequestBody())
@@ -86,7 +89,9 @@ fun CourseScreen(
         }
     }
     var filteredItems by remember { mutableStateOf<List<Course>?>(null) }
-
+    LaunchedEffect(searchText) {
+        viewModel.fetchCourses(FilterRequestBody(search = searchText))
+    }
     SwipeRefresh(
         state = SwipeRefreshState(isRefreshing = isClassesRefreshing),
         //        state = swipeRefreshState,
@@ -103,7 +108,7 @@ fun CourseScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                .padding(16.dp)
         ) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
@@ -115,7 +120,7 @@ fun CourseScreen(
                     Column {
                         IconTextField(
                             value = searchText,
-                            placeholder = "Search class",
+                            placeholder = "Search course",
                             onValueChange = { searchText = it })
                         //        Gap.k16.Height()
 
@@ -142,9 +147,9 @@ fun CourseScreen(
                                 Box(
                                     modifier = Modifier
                                         .clip(shape = RoundedCornerShape(50))
+                                        .clickable { selectedCategory.value = it }
                                         .background(backgroundColor)
                                         .padding(horizontal = 16.dp, vertical = 8.dp)
-                                        .clickable { selectedCategory.value = it }
                                 ) {
                                     Text(
                                         text = it,
@@ -181,6 +186,15 @@ fun CourseScreen(
                     is DataState.Success -> {
                         val items =
                             (courses as? DataState.Success)?.data?.data ?: mutableListOf()
+                        if (items.isEmpty()) {
+                            item(span = { GridItemSpan(2) }) {
+                                Text(
+                                    text = "No course found",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    textAlign = TextAlign.Center,
+                                )
+                            }
+                        }
                         var coursesWithClass = mutableListOf<Course>()
 
                         if (userViewModel.getUser() != null) {

@@ -23,19 +23,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -171,151 +166,137 @@ fun ProfileDetailScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                TopAppBar(
-                    colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = MaterialTheme.colorScheme.background),
-                    title = { /*TODO*/ },
-                    actions = {
-                        IconButton(onClick = { /*TODO*/ }) {
-                            Icon(
-                                imageVector = Icons.Rounded.Edit,
-                                contentDescription = "Update avatar"
-                            )
-                        }
-                    })
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Box {
-                        if (bitmap == null)
-                            AsyncImage(
-                                model = ImageRequest.Builder(LocalContext.current)
-                                    .data(user.avatarUrl)
-                                    .placeholder(R.drawable.avatar_placeholder)
-                                    .error(R.drawable.avatar_placeholder)
-                                    .build(),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(150.dp)
-                                    .clip(RoundedCornerShape(75.dp)),
-                                contentScale = ContentScale.Crop
-                            )
-                        else bitmap?.let {
-                            Image(
-                                bitmap = it.asImageBitmap(),
-                                contentDescription = "Image",
-                                modifier = Modifier
-                                    .size(150.dp)
-                                    .clip(RoundedCornerShape(75.dp))
-                            )
-                        }
-                        Box(
+                Box {
+                    if (bitmap == null)
+                        AsyncImage(
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data(user.avatarUrl)
+                                .placeholder(R.drawable.avatar_placeholder)
+                                .error(R.drawable.avatar_placeholder)
+                                .build(),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(150.dp)
+                                .clip(RoundedCornerShape(75.dp)),
+                            contentScale = ContentScale.Crop
+                        )
+                    else bitmap?.let {
+                        Image(
+                            bitmap = it.asImageBitmap(),
+                            contentDescription = "Image",
                             modifier = Modifier
                                 .size(150.dp)
                                 .clip(RoundedCornerShape(75.dp))
-                                .background(color = Color.Gray.copy(alpha = 0.5f))
-                                .clickable { showSelectImageDialog = true },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.round_camera_alt_24),
-                                contentDescription = "Update avatar"
-                            )
-                        }
+                        )
                     }
-                    Gap.k32.Height()
-                    TextField(
-                        label = "Name",
-                        value = name,
-                        onTextChange = { userViewModel.onNameChange(it) })
-                    Gap.k16.Height()
-                    TextField(
-                        label = "Phone",
-                        value = phone,
-                        keyboardOption = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Phone),
-                        onTextChange = { userViewModel.onPhoneChange(it) })
-                    Gap.k16.Height()
                     Box(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(color = Color.White)
-                            .border(
-                                width = 1.dp,
-                                color = Color.Gray,
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                            .clickable {
-                                expanded = true
-                            }, contentAlignment = Alignment.CenterStart
+                            .size(150.dp)
+                            .clip(RoundedCornerShape(75.dp))
+                            .background(color = Color.Gray.copy(alpha = 0.5f))
+                            .clickable { showSelectImageDialog = true },
+                        contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            modifier = Modifier.padding(16.dp),
-                            text = gender.ifEmpty { "Gender" },
-                            color = MaterialTheme.colorScheme.onSurface
+                        Icon(
+                            painter = painterResource(id = R.drawable.round_camera_alt_24),
+                            contentDescription = "Update avatar"
                         )
-                        DropdownMenu(
-                            modifier = Modifier
-                                .padding(16.dp)
-                                .clip(shape = RoundedCornerShape(16.dp)),
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false }) {
-                            genderOptions.forEach { option ->
-                                Text(
-                                    modifier = Modifier
-                                        .padding(8.dp)
-                                        .clickable {
-                                            userViewModel.onGenderChange(option)
-                                            expanded = false
-                                        },
-                                    text = option
-                                )
-                            }
-
-                        }
                     }
-                    Gap.k16.Height()
-                    Box(
+                }
+                Gap.k32.Height()
+                TextField(
+                    label = "Name",
+                    value = name,
+                    onTextChange = { userViewModel.onNameChange(it) })
+                Gap.k16.Height()
+                TextField(
+                    label = "Phone",
+                    value = phone,
+                    keyboardOption = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Phone),
+                    onTextChange = { userViewModel.onPhoneChange(it) })
+                Gap.k16.Height()
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(color = Color.White)
+                        .border(
+                            width = 1.dp,
+                            color = Color.Gray,
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .clickable {
+                            expanded = true
+                        }, contentAlignment = Alignment.CenterStart
+                ) {
+                    Text(
+                        modifier = Modifier.padding(16.dp),
+                        text = gender.ifEmpty { "Gender" },
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    DropdownMenu(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(color = Color.White)
-                            .border(
-                                width = 1.dp,
-                                color = Color.Gray,
-                                shape = RoundedCornerShape(16.dp)
+                            .padding(16.dp)
+                            .clip(shape = RoundedCornerShape(16.dp)),
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }) {
+                        genderOptions.forEach { option ->
+                            Text(
+                                modifier = Modifier
+                                    .padding(8.dp)
+                                    .clickable {
+                                        userViewModel.onGenderChange(option)
+                                        expanded = false
+                                    },
+                                text = option
                             )
-                            .clickable {
-                                datePickerDialog.show()
-                            }, contentAlignment = Alignment.CenterStart
-                    ) {
-                        Text(
-                            modifier = Modifier.padding(16.dp),
-                            text = if (dateOfBirth.isNotEmpty()) parseDateTime(dateOfBirth).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) else "Date of birth",
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
+                        }
 
                     }
-                    Gap.k32.Height()
-                    LargeButton(
-                        text = "Save",
-                        isLoading = userUpdatedState is DataState.Loading,
-                        onClick = {
-                            userViewModel.updateProfile(
-                                id = user.id!!,
-                                name = name,
-                                phone = phone,
-                                gender = gender,
-                                status = null,
-                                dateOfBirth = dateOfBirth,
-                                avatar = avatar
-                            )
-                        })
-                    Gap.k16.Height()
-                    TextButton(onClick = { /*TODO*/ }) {
-                        Text(text = "Change password")
-                    }
+                }
+                Gap.k16.Height()
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(color = Color.White)
+                        .border(
+                            width = 1.dp,
+                            color = Color.Gray,
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .clickable {
+                            datePickerDialog.show()
+                        }, contentAlignment = Alignment.CenterStart
+                ) {
+                    Text(
+                        modifier = Modifier.padding(16.dp),
+                        text = if (dateOfBirth.isNotEmpty()) parseDateTime(dateOfBirth).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) else "Date of birth",
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+
+                }
+                Gap.k32.Height()
+                LargeButton(
+                    text = "Save",
+                    isLoading = userUpdatedState is DataState.Loading,
+                    onClick = {
+                        userViewModel.updateProfile(
+                            id = user.id!!,
+                            name = name,
+                            phone = phone,
+                            gender = gender,
+                            status = null,
+                            dateOfBirth = dateOfBirth,
+                            avatar = avatar
+                        )
+                    })
+                Gap.k16.Height()
+                TextButton(onClick = { /*TODO*/ }) {
+                    Text(text = "Change password")
                 }
             }
         }

@@ -52,7 +52,6 @@ import fptu.capstone.gymmanagesystem.R
 import fptu.capstone.gymmanagesystem.model.Course
 import fptu.capstone.gymmanagesystem.model.FilterRequestBody
 import fptu.capstone.gymmanagesystem.model.GClass
-import fptu.capstone.gymmanagesystem.model.Pagination
 import fptu.capstone.gymmanagesystem.model.Response
 import fptu.capstone.gymmanagesystem.ui.component.Gap
 import fptu.capstone.gymmanagesystem.ui.component.shimmerLoadingAnimation
@@ -98,7 +97,6 @@ fun ScheduleScreen(
         classViewModel.fetchClassesEnrolled(FilterRequestBody(status = "Active"))
         classViewModel.fetchLessons(
             FilterRequestBody(
-                pagination = Pagination(pageSize = 100),
                 orderBy = "StartTime",
                 isAscending = true
             )
@@ -110,7 +108,6 @@ fun ScheduleScreen(
         classViewModel.fetchClassesEnrolled(FilterRequestBody(status = "Active"))
         classViewModel.fetchLessons(
             FilterRequestBody(
-                pagination = Pagination(pageSize = 100),
                 orderBy = "StartTime",
                 isAscending = true
             )
@@ -220,6 +217,7 @@ fun ScheduleScreen(
                                 state = rememberPagerState(pageCount = { myCourses.size }),
                                 pageSpacing = 16.dp
                             ) { page ->
+                                println("InDay: ${myCourses[page]}")
                                 InDay(myCourses[page])
                             }
                         } else Text(text = "You have no class")

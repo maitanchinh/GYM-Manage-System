@@ -172,7 +172,8 @@ fun CourseDetailScreen(
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
                                     text = if (feedbackState is DataState.Success) {
-                                        val feedbacks = (feedbackState as DataState.Success).data.data
+                                        val feedbacks =
+                                            (feedbackState as DataState.Success).data.data
                                         val score = feedbacks.map { it.score!! }.average()
                                         String.format("%.1f", score)
                                     } else {
@@ -223,7 +224,7 @@ fun CourseDetailScreen(
                         if (classesState is DataState.Success) {
                             val classes = (classesState as DataState.Success).data.data
                             println("Classes: $classes")
-                            if (classes.isNotEmpty()){
+                            if (classes.isNotEmpty()) {
                                 Column(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalAlignment = Alignment.CenterHorizontally
@@ -239,11 +240,13 @@ fun CourseDetailScreen(
                                 if (courses.isEmpty())
                                     Column {
                                         Gap.k16.Height()
-                                        LargeButton(text = "Add to wishlist", isLoading = false) {
-                                            if (userViewModel.getUser() != null) {
-                                                isShowConfirmDialog = true
-                                            } else {
-                                                onEnrollClick(Route.Profile.route)
+                                        LargeButton(text = if (userViewModel.getUser()?.rank != "Basic") "Add to wishlist" else "Please upgrade your account", isLoading = false, isAlter = userViewModel.getUser()?.rank == "Basic") {
+                                            if (userViewModel.getUser()?.rank != "Basic") {
+                                                if (userViewModel.getUser() != null) {
+                                                    isShowConfirmDialog = true
+                                                } else {
+                                                    onEnrollClick(Route.Profile.route)
+                                                }
                                             }
                                         }
                                     }
@@ -312,7 +315,12 @@ fun CourseDetailScreen(
                     }
 
                     "Reviews" -> {
-                        ReviewContent(courseId = courseId, modifier = Modifier.fillMaxWidth().weight(1f))
+                        ReviewContent(
+                            courseId = courseId,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                        )
                     }
 
                     "Requirements" -> {

@@ -14,10 +14,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
@@ -26,6 +28,8 @@ import com.google.accompanist.flowlayout.FlowRow
 import fptu.capstone.gymmanagesystem.model.CourseCategory
 import fptu.capstone.gymmanagesystem.model.FilterRequestBody
 import fptu.capstone.gymmanagesystem.model.Response
+import fptu.capstone.gymmanagesystem.ui.component.Gap
+import fptu.capstone.gymmanagesystem.ui.component.IconTextField
 import fptu.capstone.gymmanagesystem.utils.DataState
 import fptu.capstone.gymmanagesystem.viewmodel.CategoryViewModel
 import fptu.capstone.gymmanagesystem.viewmodel.CourseViewModel
@@ -37,6 +41,7 @@ fun AllCourseScreen(viewModel: CourseViewModel = hiltViewModel(), categoryViewMo
     val selectedCategory = remember { mutableStateOf("All") }
     val categoryState by categoryViewModel.categories.collectAsState()
     var categories = arrayListOf("All")
+    var searchText by remember { mutableStateOf("") }
     if (categoryState is DataState.Success) {
         categories.addAll((categoryState as DataState.Success<Response<CourseCategory>>).data.data.map { it.name!! })
         if (selectedCategory.value == "All") {
@@ -44,6 +49,10 @@ fun AllCourseScreen(viewModel: CourseViewModel = hiltViewModel(), categoryViewMo
         } else {
             viewModel.fetchCourses(FilterRequestBody(categoryId = (categoryState as DataState.Success<Response<CourseCategory>>).data.data.find { it.name == selectedCategory.value }?.id))
         }
+    }
+
+    LaunchedEffect(searchText) {
+        viewModel.fetchCourses(FilterRequestBody(search = searchText))
     }
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -57,6 +66,11 @@ fun AllCourseScreen(viewModel: CourseViewModel = hiltViewModel(), categoryViewMo
 //        val items = classes.value.classes
         item(span = { GridItemSpan(2) }) {
             Column {
+                IconTextField(
+                    value = searchText,
+                    placeholder = "Search course",
+                    onValueChange = { searchText = it })
+                Gap.k16.Height()
                 FlowRow(mainAxisSpacing = 16.dp, crossAxisSpacing = 8.dp) {
                     categories.forEach {
                         val isSelected = selectedCategory.value == it

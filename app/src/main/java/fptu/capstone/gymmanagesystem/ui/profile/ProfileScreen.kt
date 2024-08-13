@@ -77,15 +77,16 @@ fun ProfileScreen(
     var isRefreshing by remember { mutableStateOf(false) }
     val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isRefreshing)
     var isShowDialog by remember { mutableStateOf(false) }
-    val paymentLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        userViewModel.getUserById(user?.id!!)
-        user = userViewModel.getUser()
-        if (user?.rank == "Basic") {
-            memberViewModel.setPaymentState(false)
-        } else {
-            memberViewModel.setPaymentState(true)
+    val paymentLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            userViewModel.getUserById(user?.id!!)
+            user = userViewModel.getUser()
+            if (user?.rank == "Basic") {
+                memberViewModel.setPaymentState(false)
+            } else {
+                memberViewModel.setPaymentState(true)
+            }
         }
-    }
     LaunchedEffect(userState) {
         userViewModel.getUserById(user?.id!!)
         user = userViewModel.getUser()
@@ -181,7 +182,8 @@ fun ProfileScreen(
                 text = if (paymentState) "Your account is upgraded" else "Upgrade account",
                 isLoading = urlPaymentState is DataState.Loading
             ) {
-                isShowDialog = true
+                if (!paymentState)
+                    isShowDialog = true
             }
             Gap.k32.Height()
             Box(
