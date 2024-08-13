@@ -8,6 +8,7 @@ import fptu.capstone.gymmanagesystem.model.FilterRequestBody
 import fptu.capstone.gymmanagesystem.model.Response
 import fptu.capstone.gymmanagesystem.repositories.CategoryRepository
 import fptu.capstone.gymmanagesystem.utils.DataState
+import fptu.capstone.gymmanagesystem.utils.Message
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -30,7 +31,7 @@ class CategoryViewModel @Inject constructor(private val categoryRepository: Cate
                 _categories.value = DataState.Success(response)
             } catch (e: Exception) {
                 e.printStackTrace()
-                _categories.value = DataState.Error(e.message ?: "Unknown error")
+                _categories.value = DataState.Error(Message.FETCH_DATA_FAILURE.message)
             }
         }
     }

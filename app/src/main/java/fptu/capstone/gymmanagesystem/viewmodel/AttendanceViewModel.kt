@@ -8,6 +8,7 @@ import fptu.capstone.gymmanagesystem.model.FilterRequestBody
 import fptu.capstone.gymmanagesystem.model.Response
 import fptu.capstone.gymmanagesystem.repositories.AttendanceRepository
 import fptu.capstone.gymmanagesystem.utils.DataState
+import fptu.capstone.gymmanagesystem.utils.Message
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -28,8 +29,8 @@ class AttendanceViewModel @Inject constructor(private val attendanceRepository: 
                 _attendances.value = DataState.Success(response)
             } catch (e: Exception) {
                 e.printStackTrace()
-                println("Error at fetchAttendances: ${e.message}")
-                _attendances.value = DataState.Error(e.message ?: "Unknown error")
+                println("Error at fetchAttendances: ${Message.FETCH_DATA_FAILURE.message}")
+                _attendances.value = DataState.Error(Message.FETCH_DATA_FAILURE.message)
             }
         }
     }

@@ -8,6 +8,7 @@ import fptu.capstone.gymmanagesystem.model.Lesson
 import fptu.capstone.gymmanagesystem.model.Response
 import fptu.capstone.gymmanagesystem.repositories.LessonRepository
 import fptu.capstone.gymmanagesystem.utils.DataState
+import fptu.capstone.gymmanagesystem.utils.Message
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -26,8 +27,8 @@ class LessonViewModel @Inject constructor(private val lessonRepository: LessonRe
                 _lessons.value = DataState.Success(response)
             } catch (e: Exception) {
                 e.printStackTrace()
-                println("Error at getLessons: ${e.message}")
-                _lessons.value = DataState.Error(e.message ?: "Unknown error")
+                println("Error at getLessons: ${Message.FETCH_DATA_FAILURE.message}")
+                _lessons.value = DataState.Error(Message.FETCH_DATA_FAILURE.message)
             }
        }
     }

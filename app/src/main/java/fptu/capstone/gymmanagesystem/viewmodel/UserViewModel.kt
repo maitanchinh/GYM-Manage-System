@@ -116,7 +116,7 @@ class UserViewModel @Inject constructor(
                 sessionManager.saveUser(response)
             } catch (e: Exception) {
                 e.printStackTrace()
-                _userState.value = DataState.Error(e.message ?: "Unknown error")
+                _userState.value = DataState.Error(Message.FETCH_DATA_FAILURE.message)
             }
 
         }

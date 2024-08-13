@@ -10,6 +10,7 @@ import fptu.capstone.gymmanagesystem.model.FilterRequestBody
 import fptu.capstone.gymmanagesystem.model.Response
 import fptu.capstone.gymmanagesystem.repositories.CommunicationRepository
 import fptu.capstone.gymmanagesystem.utils.DataState
+import fptu.capstone.gymmanagesystem.utils.Message
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -60,8 +61,8 @@ class CommunicationViewModel @Inject constructor(private val communicationReposi
                 _communication.value = DataState.Success(response)
             } catch (e: Exception) {
                 e.printStackTrace()
-                println("Error at fetchCommunications: ${e.message}")
-                _communication.value = DataState.Error(e.message ?: "Unknown error")
+                println("Error at fetchCommunications: ${Message.FETCH_DATA_FAILURE.message}")
+                _communication.value = DataState.Error(Message.FETCH_DATA_FAILURE.message)
             }
         }
     }
@@ -102,8 +103,8 @@ class CommunicationViewModel @Inject constructor(private val communicationReposi
                 _sendCommunication.value = DataState.Success(response)
             } catch (e: Exception) {
                 e.printStackTrace()
-                println("Error at postCommunication: ${e.message}")
-                _sendCommunication.value = DataState.Error(e.message ?: "Unknown error")
+                println("Error at postCommunication: ${Message.FETCH_DATA_FAILURE.message}")
+                _sendCommunication.value = DataState.Error(Message.FETCH_DATA_FAILURE.message)
             }
         }
     }
@@ -119,8 +120,8 @@ class CommunicationViewModel @Inject constructor(private val communicationReposi
                 _sendComment.value = DataState.Success(response)
             } catch (e: Exception) {
                 e.printStackTrace()
-                println("Error at sendComment: ${e.message}")
-                _sendComment.value = DataState.Error(e.message ?: "Unknown error")
+                println("Error at sendComment: ${Message.FETCH_DATA_FAILURE.message}")
+                _sendComment.value = DataState.Error(Message.FETCH_DATA_FAILURE.message)
             }
         }
     }

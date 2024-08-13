@@ -28,7 +28,7 @@ class MemberViewModel @Inject constructor(private val memberRepository: MemberRe
                println("Success at buyPackage: $response")
            } catch (e: HttpException) {
                e.printStackTrace()
-               println("Error at buyPackage: ${e.message}")
+               println("Error at buyPackage: ${Message.FETCH_DATA_FAILURE.message}")
                _urlPayment.value = DataState.Error(if (e.code() ==  400) Message.PAYMENT_PENDING.message else Message.ERROR_NETWORK.message)
            }
        }

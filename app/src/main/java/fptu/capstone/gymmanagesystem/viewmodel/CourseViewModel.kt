@@ -9,6 +9,7 @@ import fptu.capstone.gymmanagesystem.model.Response
 import fptu.capstone.gymmanagesystem.model.Wishlist
 import fptu.capstone.gymmanagesystem.repositories.CourseRepository
 import fptu.capstone.gymmanagesystem.utils.DataState
+import fptu.capstone.gymmanagesystem.utils.Message
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -49,8 +50,8 @@ class CourseViewModel @Inject constructor(private val courseRepository: CourseRe
                 println("Courses: ${response.data}")
             } catch (e: Exception) {
                 e.printStackTrace()
-                println("Error at fetchCourses: ${e.message}")
-                _courses.value = DataState.Error(e.message ?: "Unknown error")
+                println("Error at fetchCourses: ${Message.FETCH_DATA_FAILURE.message}")
+                _courses.value = DataState.Error(Message.FETCH_DATA_FAILURE.message)
             }
         }
     }
@@ -63,8 +64,8 @@ class CourseViewModel @Inject constructor(private val courseRepository: CourseRe
                 _course.value = DataState.Success(response)
             } catch (e: Exception) {
                 e.printStackTrace()
-                println("Error at getCourseById: ${e.message}")
-                _course.value = DataState.Error(e.message ?: "Unknown error")
+                println("Error at getCourseById: ${Message.FETCH_DATA_FAILURE.message}")
+                _course.value = DataState.Error(Message.FETCH_DATA_FAILURE.message)
             }
         }
     }
@@ -77,8 +78,8 @@ class CourseViewModel @Inject constructor(private val courseRepository: CourseRe
                 _wishlists.value = DataState.Success(response)
             } catch (e: Exception) {
                 e.printStackTrace()
-                println("Error at fetchWishlists: ${e.message}")
-                _wishlists.value = DataState.Error(e.message ?: "Unknown error")
+                println("Error at fetchWishlists: ${Message.FETCH_DATA_FAILURE.message}")
+                _wishlists.value = DataState.Error(Message.FETCH_DATA_FAILURE.message)
             }
         }
     }
@@ -91,8 +92,8 @@ class CourseViewModel @Inject constructor(private val courseRepository: CourseRe
                 _wishlist.value = DataState.Success(response)
             } catch (e: Exception) {
                 e.printStackTrace()
-                println("Error at addWishlist: ${e.message}")
-                _wishlist.value = DataState.Error(e.message ?: "Unknown error")
+                println("Error at addWishlist: ${Message.FETCH_DATA_FAILURE.message}")
+                _wishlist.value = DataState.Error(Message.FETCH_DATA_FAILURE.message)
             }
         }
     }

@@ -12,6 +12,7 @@ import fptu.capstone.gymmanagesystem.repositories.ClassRepository
 import fptu.capstone.gymmanagesystem.repositories.LessonRepository
 import fptu.capstone.gymmanagesystem.repositories.MemberRepository
 import fptu.capstone.gymmanagesystem.utils.DataState
+import fptu.capstone.gymmanagesystem.utils.Message
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -56,8 +57,8 @@ class ClassViewModel @Inject constructor(
 //                _classes.value = response
             } catch (e: Exception) {
                 e.printStackTrace()
-                println("Error at fetchClasses: ${e.message}")
-                _classes.value = DataState.Error(e.message ?: "Unknown error")
+                println("Error at fetchClasses: ${Message.FETCH_DATA_FAILURE.message}")
+                _classes.value = DataState.Error(Message.FETCH_DATA_FAILURE.message)
             }
         }
     }
@@ -69,7 +70,7 @@ class ClassViewModel @Inject constructor(
                 _lessons.value = response
             } catch (e: Exception) {
                 e.printStackTrace()
-                println("Error at fetchLessons: ${e.message}")
+                println("Error at fetchLessons: ${Message.FETCH_DATA_FAILURE.message}")
             }
         }
     }
@@ -83,8 +84,8 @@ class ClassViewModel @Inject constructor(
                 println("Response: $response")
             } catch (e: Exception) {
                 e.printStackTrace()
-                println("Error at fetchMembers: ${e.message}")
-                _classMembers.value = DataState.Error(e.message ?: "Unknown error")
+                println("Error at fetchMembers: ${Message.FETCH_DATA_FAILURE.message}")
+                _classMembers.value = DataState.Error(Message.FETCH_DATA_FAILURE.message)
             }
         }
     }
@@ -97,8 +98,8 @@ class ClassViewModel @Inject constructor(
                 _classes.value = DataState.Success(response)
             } catch (e: Exception) {
                 e.printStackTrace()
-                println("Error at fetchClassesEnrolled: ${e.message}")
-                _classes.value = DataState.Error(e.message ?: "Unknown error")
+                println("Error at fetchClassesEnrolled: ${Message.FETCH_DATA_FAILURE.message}")
+                _classes.value = DataState.Error(Message.FETCH_DATA_FAILURE.message)
             }
         }
     }
@@ -111,8 +112,8 @@ class ClassViewModel @Inject constructor(
                 _classInDate.value = DataState.Success(response)
             } catch (e: Exception) {
                 e.printStackTrace()
-                println("Error at fetchClassesInDate: ${e.message}")
-                _classInDate.value = DataState.Error(e.message ?: "Unknown error")
+                println("Error at fetchClassesInDate: ${Message.FETCH_DATA_FAILURE.message}")
+                _classInDate.value = DataState.Error(Message.FETCH_DATA_FAILURE.message)
             }
         }
     }

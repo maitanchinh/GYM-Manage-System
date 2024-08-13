@@ -9,9 +9,11 @@ import fptu.capstone.gymmanagesystem.model.Response
 import fptu.capstone.gymmanagesystem.network.FeedbackRequestBody
 import fptu.capstone.gymmanagesystem.repositories.FeedbackRepository
 import fptu.capstone.gymmanagesystem.utils.DataState
+import fptu.capstone.gymmanagesystem.utils.Message
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -37,8 +39,8 @@ class FeedbackViewModel @Inject constructor(private val feedbackRepository: Feed
                 _feedbacks.value = DataState.Success(response)
             } catch (e: Exception) {
                 e.printStackTrace()
-                println("Error at getFeedbacks: ${e.message}")
-                _feedbacks.value = DataState.Error(e.message ?: "Unknown error")
+                println("Error at getFeedbacks: ${Message.FETCH_DATA_FAILURE.message}")
+                _feedbacks.value = DataState.Error(Message.FETCH_DATA_FAILURE.message)
             }
         }
     }
@@ -65,10 +67,10 @@ class FeedbackViewModel @Inject constructor(private val feedbackRepository: Feed
             try {
                 val response: Feedback = feedbackRepository.feedback(slotId = slotId, feedback = feedback)
                 _feedback.value = DataState.Success(response)
-            } catch (e: Exception) {
+            } catch (e: HttpException) {
                 e.printStackTrace()
-                println("Error at sendFeedback: ${e.message}")
-                _feedback.value = DataState.Error(if (e.message == "HTTP 400 Bad Request") "You have already feedback this lesson" else "Unknown error")
+                println("Error at sendFeedback: ${Message.FETCH_DATA_FAILURE.message}")
+                _feedback.value = DataState.Error(if (e.code() == 100) "You have already feedback this lesson" else "Unknown error")
             }
         }
     }

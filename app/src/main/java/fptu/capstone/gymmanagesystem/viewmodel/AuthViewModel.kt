@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import fptu.capstone.gymmanagesystem.model.AuthResponse
 import fptu.capstone.gymmanagesystem.repositories.AuthRepository
 import fptu.capstone.gymmanagesystem.utils.DataState
+import fptu.capstone.gymmanagesystem.utils.Message
 import fptu.capstone.gymmanagesystem.utils.SessionManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -61,7 +62,7 @@ class AuthViewModel @Inject constructor(
                 _authState.value = DataState.Idle
             } catch (e: Exception) {
                 e.printStackTrace()
-                _authState.value = DataState.Error(e.message ?: "Unknown error")
+                _authState.value = DataState.Error(Message.FETCH_DATA_FAILURE.message)
             }
         }
     }

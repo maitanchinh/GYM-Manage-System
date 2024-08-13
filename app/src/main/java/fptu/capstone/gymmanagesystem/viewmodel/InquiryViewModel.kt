@@ -9,6 +9,7 @@ import fptu.capstone.gymmanagesystem.model.InquiryRequestBody
 import fptu.capstone.gymmanagesystem.model.Response
 import fptu.capstone.gymmanagesystem.repositories.InquiryRepository
 import fptu.capstone.gymmanagesystem.utils.DataState
+import fptu.capstone.gymmanagesystem.utils.Message
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -51,8 +52,8 @@ class InquiryViewModel @Inject constructor(private val inquiryRepository: Inquir
                 _inquiries.value = DataState.Success(response)
             } catch (e: Exception) {
                 e.printStackTrace()
-                println("Error at fetchInquiries: ${e.message}")
-                _inquiries.value = DataState.Error(e.message ?: "Unknown error")
+                println("Error at fetchInquiries: ${Message.FETCH_DATA_FAILURE.message}")
+                _inquiries.value = DataState.Error(Message.FETCH_DATA_FAILURE.message)
             }
         }
     }
@@ -65,8 +66,8 @@ class InquiryViewModel @Inject constructor(private val inquiryRepository: Inquir
                 _inquiry.value = DataState.Success(response)
             } catch (e: Exception) {
                 e.printStackTrace()
-                println("Error at getInquiryDetail: ${e.message}")
-                _inquiry.value = DataState.Error(e.message ?: "Unknown error")
+                println("Error at getInquiryDetail: ${Message.FETCH_DATA_FAILURE.message}")
+                _inquiry.value = DataState.Error(Message.FETCH_DATA_FAILURE.message)
             }
         }
     }
@@ -92,8 +93,8 @@ class InquiryViewModel @Inject constructor(private val inquiryRepository: Inquir
                 _inquiry.value = DataState.Success(response)
             } catch (e: Exception) {
                 e.printStackTrace()
-                println("Error at createInquiry: ${e.message}")
-                _inquiry.value = DataState.Error(e.message ?: "Unknown error")
+                println("Error at createInquiry: ${Message.FETCH_DATA_FAILURE.message}")
+                _inquiry.value = DataState.Error(Message.FETCH_DATA_FAILURE.message)
             }
         }
     }
@@ -113,8 +114,8 @@ class InquiryViewModel @Inject constructor(private val inquiryRepository: Inquir
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                println("Error at deleteInquiry: ${e.message}")
-                _inquiry.value = DataState.Error(e.message ?: "Unknown error")
+                println("Error at deleteInquiry: ${Message.FETCH_DATA_FAILURE.message}")
+                _inquiry.value = DataState.Error(Message.FETCH_DATA_FAILURE.message)
             }
         }
     }
