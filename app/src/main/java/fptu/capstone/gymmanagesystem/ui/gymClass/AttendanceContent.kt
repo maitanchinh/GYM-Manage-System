@@ -96,6 +96,13 @@ fun AttendanceContent(
                     isAscending = true
                 )
             )
+            attendanceViewModel.fetchAttendances(
+                FilterRequestBody(
+                    classId = classId,
+                    orderBy = "CreateAt",
+                    isAscending = true
+                )
+            )
         }) {
         when (lessonsState) {
             is DataState.Loading -> {
