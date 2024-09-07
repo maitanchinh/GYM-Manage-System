@@ -223,7 +223,6 @@ fun CourseDetailScreen(
                         val courses = (wishlistsState as DataState.Success).data.data
                         if (classesState is DataState.Success) {
                             val classes = (classesState as DataState.Success).data.data
-                            println("Classes: $classes")
                             if (classes.isNotEmpty()) {
                                 Column(
                                     modifier = Modifier.fillMaxWidth(),

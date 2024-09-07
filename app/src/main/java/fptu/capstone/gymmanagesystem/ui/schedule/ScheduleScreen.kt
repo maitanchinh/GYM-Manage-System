@@ -217,7 +217,6 @@ fun ScheduleScreen(
                                 state = rememberPagerState(pageCount = { myCourses.size }),
                                 pageSpacing = 16.dp
                             ) { page ->
-                                println("InDay: ${myCourses[page]}")
                                 InDay(myCourses[page])
                             }
                         } else Text(text = "You have no class")

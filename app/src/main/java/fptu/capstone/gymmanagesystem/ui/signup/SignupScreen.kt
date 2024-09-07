@@ -52,8 +52,14 @@ fun SignupScreen(
         Gap.k8.Height()
         TextField(label = "Email", value = email, onTextChange = userViewModel::onEmailChange)
         Gap.k8.Height()
+        if (email.isNotEmpty() && !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            Text(text = "Invalid email", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+        }
         TextField(label = "Password", value = password, visualTransformation = PasswordVisualTransformation(), onTextChange = userViewModel::onPasswordChange)
         Gap.k8.Height()
+        if (password.isNotEmpty() && password.length < 8) {
+            Text(text = "Password must be at least 8 characters", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
+        }
         TextField(label = "Confirm Password", value = confirmPassword, visualTransformation = PasswordVisualTransformation(), onTextChange = userViewModel::onConfirmPasswordChange)
         Gap.k8.Height()
         if (password.isNotEmpty() && confirmPassword.isNotEmpty() && password != confirmPassword) {
