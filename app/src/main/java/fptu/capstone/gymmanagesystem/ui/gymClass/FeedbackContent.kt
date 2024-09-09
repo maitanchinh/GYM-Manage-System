@@ -190,14 +190,16 @@ fun FeedbackContent(
 
                 is DataState.Success -> {
                     val lessons = (lessonsState as DataState.Success).data.data
+                    println(lessons)
                     val listState = rememberLazyListState()
-                    val currentLesson = lessons.first {
+                    val currentLesson = lessons.firstOrNull() {
                         parseDateTime(it.endTime!!).isAfter(
                             LocalDateTime.now()
                         )
                     }
                     LaunchedEffect(Unit) {
-                        listState.scrollToItem(lessons.indexOf(currentLesson) - 1)
+                        if (currentLesson != null)
+                            listState.scrollToItem(lessons.indexOf(currentLesson) - 1)
                     }
                     when (feedbacksState) {
                         is DataState.Loading -> {
@@ -249,9 +251,9 @@ fun FeedbackContent(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clip(shape = RoundedCornerShape(8.dp))
-                                    .background(color = if (currentLesson.id == lessons[index].id) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.secondaryContainer)
+                                    .background(color = if (currentLesson != null && currentLesson.id == lessons[index].id) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.secondaryContainer)
                                     .clickable {
-                                        if (currentLesson.id == lessons[index].id && lessons[index].feedbackStatus!!) {
+                                        if (currentLesson != null && currentLesson.id == lessons[index].id && lessons[index].feedbackStatus!!) {
                                             feedbackViewModel.setShowFeedbackDialog()
                                             feedbackViewModel.setFeedbackSlotId(lessons[index].id!!)
                                         }
@@ -324,7 +326,10 @@ fun FeedbackContent(
                         )
                     }
                 }) {
-                    Text(text = "Send", color = if (feedbackScore in 1..5) MaterialTheme.colorScheme.onPrimaryContainer else Color.Gray)
+                    Text(
+                        text = "Send",
+                        color = if (feedbackScore in 1..5) MaterialTheme.colorScheme.onPrimaryContainer else Color.Gray
+                    )
                 }
             },
             dismissButton = {

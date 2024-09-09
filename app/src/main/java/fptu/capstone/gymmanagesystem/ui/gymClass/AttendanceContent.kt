@@ -169,13 +169,13 @@ fun AttendanceContent(
                                     ) {
                                         Column {
                                             Text(
-                                                text = lessons[index].name!!,
+                                                text = attendanceLessons[index].name!!,
                                                 style = MaterialTheme.typography.titleMedium
                                             )
                                             Text(text = "$startTime - $endTime  $date")
                                         }
-                                        if (lessons[index].isPast) {
-                                            if (lessons[index].isAttendance) {
+                                        if (attendanceLessons[index].isPast) {
+                                            if (attendanceLessons[index].isAttendance) {
                                                 Icon(
                                                     painter = painterResource(id = R.drawable.round_check_circle_outline_32),
                                                     contentDescription = null,

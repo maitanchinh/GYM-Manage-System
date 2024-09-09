@@ -37,4 +37,8 @@ class MemberViewModel @Inject constructor(private val memberRepository: MemberRe
     fun setPaymentState(state: Boolean){
         _paymentState.value = state
     }
+
+    fun resetUrlPayment(){
+        _urlPayment.value = DataState.Idle
+    }
 }

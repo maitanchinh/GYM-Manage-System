@@ -94,6 +94,7 @@ fun ProfileScreen(
             } else {
                 memberViewModel.setPaymentState(true)
             }
+            memberViewModel.resetUrlPayment()
         }
     LaunchedEffect(userState) {
         userViewModel.getUserById(user?.id!!)
