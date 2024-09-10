@@ -163,7 +163,7 @@ fun CourseDetailScreen(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
-                                modifier = Modifier.fillMaxWidth(0.9f),
+                                modifier = Modifier.fillMaxWidth(0.8f),
                                 text = course.name ?: "No name",
                                 style = MaterialTheme.typography.headlineSmall,
                                 fontWeight = FontWeight.Bold,

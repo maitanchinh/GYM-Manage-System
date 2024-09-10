@@ -72,6 +72,7 @@ fun ProfileScreen(
     onProfileDetailClick: (id: String) -> Unit,
     isLoading: Boolean,
     onLogoutClick: () -> Unit,
+    onTransactionClick: () -> Unit
 ) {
     val context = LocalContext.current
     val userState by userViewModel.userState.collectAsState()
@@ -222,7 +223,10 @@ fun ProfileScreen(
                     }
                     Spacer(modifier = Modifier.padding(8.dp))
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth()
+                            .clickable {
+                                onTransactionClick()
+                            },
                         horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically
                     ) {

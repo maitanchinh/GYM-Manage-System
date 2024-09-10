@@ -18,6 +18,7 @@ import fptu.capstone.gymmanagesystem.network.FeedbackApiService
 import fptu.capstone.gymmanagesystem.network.InquiryApiService
 import fptu.capstone.gymmanagesystem.network.LessonApiService
 import fptu.capstone.gymmanagesystem.network.MemberApiService
+import fptu.capstone.gymmanagesystem.network.TransactionApiService
 import fptu.capstone.gymmanagesystem.network.UserApiService
 import fptu.capstone.gymmanagesystem.utils.RequiresAuth
 import fptu.capstone.gymmanagesystem.utils.SessionManager
@@ -168,5 +169,11 @@ object NetworkModule {
     @Provides
     fun provideFeedbackApiService(retrofit: Retrofit): FeedbackApiService {
         return retrofit.create(FeedbackApiService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideTransactionApiService(retrofit: Retrofit): TransactionApiService {
+        return retrofit.create(TransactionApiService::class.java)
     }
 }

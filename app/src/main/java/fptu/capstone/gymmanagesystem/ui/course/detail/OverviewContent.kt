@@ -95,20 +95,20 @@ fun OverviewContent(course: Course) {
                 color = Color.Gray
             )
         }
-        Gap.k8.Height()
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                painter = painterResource(id = R.drawable.round_check_circle_24),
-                contentDescription = null,
-                tint = Color.Gray
-            )
-            Gap.k8.Width()
-            Text(
-                text = "1234 students completed",
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.Gray
-            )
-        }
+//        Gap.k8.Height()
+//        Row(verticalAlignment = Alignment.CenterVertically) {
+//            Icon(
+//                painter = painterResource(id = R.drawable.round_check_circle_24),
+//                contentDescription = null,
+//                tint = Color.Gray
+//            )
+//            Gap.k8.Width()
+//            Text(
+//                text = "1234 students completed",
+//                style = MaterialTheme.typography.bodyMedium,
+//                color = Color.Gray
+//            )
+//        }
         Gap.k8.Height()
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(

@@ -27,7 +27,6 @@ class LessonViewModel @Inject constructor(private val lessonRepository: LessonRe
                 _lessons.value = DataState.Success(response)
             } catch (e: Exception) {
                 e.printStackTrace()
-                println("Error at getLessons: ${Message.FETCH_DATA_FAILURE.message}")
                 _lessons.value = DataState.Error(Message.FETCH_DATA_FAILURE.message)
             }
        }

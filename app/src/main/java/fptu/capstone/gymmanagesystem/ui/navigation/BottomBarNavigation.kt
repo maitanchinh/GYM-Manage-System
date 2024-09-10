@@ -17,6 +17,7 @@ import fptu.capstone.gymmanagesystem.ui.inquiry.InquiryScreen
 import fptu.capstone.gymmanagesystem.ui.login.LoginScreen
 import fptu.capstone.gymmanagesystem.ui.profile.ProfileDetailScreen
 import fptu.capstone.gymmanagesystem.ui.profile.ProfileScreen
+import fptu.capstone.gymmanagesystem.ui.profile.TransactionScreen
 import fptu.capstone.gymmanagesystem.ui.schedule.ScheduleScreen
 import fptu.capstone.gymmanagesystem.ui.signup.SignupScreen
 import fptu.capstone.gymmanagesystem.utils.DataState
@@ -51,6 +52,9 @@ fun BottomBarNavigation(
                     isLoading = authState is DataState.Loading,
                     onLogoutClick = {
                         authViewModel.logout()
+                    },
+                    onTransactionClick = {
+                        navController.navigate(Route.Transaction.route)
                     })
             } else {
                 LoginScreen(authViewModel, navController = navController)
@@ -100,6 +104,9 @@ fun BottomBarNavigation(
             val courseId = backStackEntry.arguments?.getString("courseId")
             val classId = backStackEntry.arguments?.getString("classId")
             ClassDetailScreen(courseId = courseId!!, classId = classId!!)
+        }
+        composable(Route.Transaction.route) {
+            TransactionScreen()
         }
     }
 }

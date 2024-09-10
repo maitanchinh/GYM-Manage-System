@@ -31,5 +31,6 @@ sealed class Route(val route: String) {
             return "inquiryDetail/$id"
         }
     }
+    object Transaction : Route("profile/transaction")
 
 }

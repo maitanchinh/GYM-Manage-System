@@ -124,7 +124,7 @@ fun AttendanceContent(
                         val lastPastLessonIndex = attendanceLessons.indexOfLast { it.isPast }
                         val listState = rememberLazyListState()
                         LaunchedEffect(lastPastLessonIndex) {
-                            if (lastPastLessonIndex != -1) {
+                            if (lastPastLessonIndex > 0) {
                                 listState.scrollToItem(lastPastLessonIndex - 1)
                             }
                         }
