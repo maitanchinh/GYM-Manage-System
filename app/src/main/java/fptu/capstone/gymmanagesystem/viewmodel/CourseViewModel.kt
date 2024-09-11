@@ -36,6 +36,10 @@ class CourseViewModel @Inject constructor(private val courseRepository: CourseRe
         fetchCourses(filterRequestBody)
     }
 
+    fun resetWishlist() {
+        _wishlist.value = DataState.Idle
+    }
+
     fun addMyCourse(course: Course) {
         if (!myCourses.contains(course))
             myCourses.add(course)
@@ -47,10 +51,8 @@ class CourseViewModel @Inject constructor(private val courseRepository: CourseRe
             try {
                 val response = courseRepository.getCourses(filterRequestBody)
                 _courses.value = DataState.Success(response)
-                println("Courses: ${response.data}")
             } catch (e: Exception) {
                 e.printStackTrace()
-                println("Error at fetchCourses: ${Message.FETCH_DATA_FAILURE.message}")
                 _courses.value = DataState.Error(Message.FETCH_DATA_FAILURE.message)
             }
         }
@@ -93,6 +95,19 @@ class CourseViewModel @Inject constructor(private val courseRepository: CourseRe
             } catch (e: Exception) {
                 e.printStackTrace()
                 println("Error at addWishlist: ${Message.FETCH_DATA_FAILURE.message}")
+                _wishlist.value = DataState.Error(Message.FETCH_DATA_FAILURE.message)
+            }
+        }
+    }
+
+    fun removeWishlist(courseId: String) {
+        viewModelScope.launch {
+            _wishlist.value = DataState.Loading
+            try {
+                val response = courseRepository.removeWishlist(courseId)
+                _wishlist.value = DataState.Success(response)
+            } catch (e: Exception) {
+                e.printStackTrace()
                 _wishlist.value = DataState.Error(Message.FETCH_DATA_FAILURE.message)
             }
         }

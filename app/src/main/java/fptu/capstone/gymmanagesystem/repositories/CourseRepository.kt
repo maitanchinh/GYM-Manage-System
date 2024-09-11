@@ -12,4 +12,6 @@ class CourseRepository @Inject constructor(private val courseApiService: CourseA
     suspend fun addWishlist(courseId: String) = courseApiService.addWishlist(courseId)
 
     suspend fun getWishlists(filterRequestBody: FilterRequestBody) = courseApiService.getWishlists(filterRequestBody)
+
+    suspend fun removeWishlist(courseId: String) = courseApiService.removeWishlist(courseId = courseId)
 }

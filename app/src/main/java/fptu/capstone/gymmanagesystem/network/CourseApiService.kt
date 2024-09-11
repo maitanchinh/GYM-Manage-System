@@ -6,6 +6,7 @@ import fptu.capstone.gymmanagesystem.model.Response
 import fptu.capstone.gymmanagesystem.model.Wishlist
 import fptu.capstone.gymmanagesystem.utils.RequiresAuth
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -23,4 +24,8 @@ interface CourseApiService {
 
     @POST("wishlists/filter")
     suspend fun getWishlists(@Body filterRequestBody: FilterRequestBody) : Response<Wishlist>
+
+    @RequiresAuth
+    @DELETE("wishlists/{courseId}/get-out")
+    suspend fun removeWishlist(@Path("courseId") courseId: String) : Wishlist
 }

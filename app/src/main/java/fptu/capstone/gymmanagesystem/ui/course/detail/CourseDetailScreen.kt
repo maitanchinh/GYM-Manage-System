@@ -70,6 +70,9 @@ fun CourseDetailScreen(
     var isShowConfirmDialog by remember {
         mutableStateOf(false)
     }
+    var isShowRemoveDialog by remember {
+        mutableStateOf(false)
+    }
     LaunchedEffect(Unit) {
         viewModel.getCourseById(courseId)
         viewModel.fetchWishlists(
@@ -87,7 +90,7 @@ fun CourseDetailScreen(
             val wishlist = (wishlistState as DataState.Success).data
             Toast.makeText(
                 context,
-                "You add course ${wishlist.course?.name} to wishlist",
+                "Successfully",
                 Toast.LENGTH_SHORT
             ).show()
             viewModel.getCourseById(courseId)
@@ -101,6 +104,7 @@ fun CourseDetailScreen(
             val message = (wishlistState as DataState.Error).message
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         }
+//        viewModel.resetWishlist()
     }
     when (courseState.value) {
         is DataState.Success -> {
@@ -239,7 +243,11 @@ fun CourseDetailScreen(
                                 if (courses.isEmpty())
                                     Column {
                                         Gap.k16.Height()
-                                        LargeButton(text = if (userViewModel.getUser()?.rank != "Basic") "Add to wishlist" else "Please upgrade your account", isLoading = false, isAlter = userViewModel.getUser()?.rank == "Basic") {
+                                        LargeButton(
+                                            text = if (userViewModel.getUser()?.rank != "Basic") "Add to wishlist" else "Please upgrade your account",
+                                            isLoading = false,
+                                            isAlter = userViewModel.getUser()?.rank == "Basic"
+                                        ) {
                                             if (userViewModel.getUser()?.rank != "Basic") {
                                                 if (userViewModel.getUser() != null) {
                                                     isShowConfirmDialog = true
@@ -255,11 +263,13 @@ fun CourseDetailScreen(
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
                                         Gap.k16.Height()
-                                        Text(
-                                            text = "This course is in your wishlist",
-                                            style = MaterialTheme.typography.titleMedium,
-                                            color = Color.Gray
-                                        )
+                                        LargeButton(
+                                            isAlter = true,
+                                            text = "Remove from wishlist",
+                                            isLoading = false
+                                        ) {
+                                            isShowRemoveDialog = true
+                                        }
                                     }
                             }
                         }
@@ -364,6 +374,37 @@ fun CourseDetailScreen(
                 TextButton(
                     onClick = {
                         isShowConfirmDialog = false
+                    }
+                ) {
+                    Text(text = "No")
+                }
+            }
+        )
+    }
+    if (isShowRemoveDialog) {
+        AlertDialog(
+            onDismissRequest = { isShowRemoveDialog = false },
+            title = {
+                Text(text = "Remove course from wishlist")
+            },
+            text = {
+                Text(text = "Are you sure you want to remove this course from wishlist?")
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        println("courseId: $courseId")
+                        viewModel.removeWishlist(courseId)
+                        isShowRemoveDialog = false
+                    }
+                ) {
+                    Text(text = "Yes")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        isShowRemoveDialog = false
                     }
                 ) {
                     Text(text = "No")
