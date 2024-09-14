@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,10 +16,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -149,27 +145,27 @@ fun ScheduleScreen(
                             fontWeight = FontWeight.Bold,
                         )
                     }
-                    Box(modifier = Modifier.size(40.dp)) {
-                        IconButton(onClick = { /*TODO*/ }) {
-                            BadgedBox(badge = {
-                                if (notificationCount > 0) {
-                                    Badge(
-                                        containerColor = MaterialTheme.colorScheme.error,
-                                        contentColor = Color.White,
-                                        modifier = Modifier.offset(x = (-10).dp, y = 10.dp)
-                                    ) {
-                                        Text(text = notificationCount.toString())
-                                    }
-                                }
-                            }) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.round_notifications_32),
-                                    contentDescription = "Notification",
-                                    tint = Color(0xFFED9455)
-                                )
-                            }
-                        }
-                    }
+//                    Box(modifier = Modifier.size(40.dp)) {
+//                        IconButton(onClick = { /*TODO*/ }) {
+//                            BadgedBox(badge = {
+//                                if (notificationCount > 0) {
+//                                    Badge(
+//                                        containerColor = MaterialTheme.colorScheme.error,
+//                                        contentColor = Color.White,
+//                                        modifier = Modifier.offset(x = (-10).dp, y = 10.dp)
+//                                    ) {
+//                                        Text(text = notificationCount.toString())
+//                                    }
+//                                }
+//                            }) {
+//                                Icon(
+//                                    painter = painterResource(id = R.drawable.round_notifications_32),
+//                                    contentDescription = "Notification",
+//                                    tint = Color(0xFFED9455)
+//                                )
+//                            }
+//                        }
+//                    }
                 }
 
             }
